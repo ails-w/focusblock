@@ -32,16 +32,17 @@
 
 ## Estructura de Carpetas
 
+> Estructura **OBJETIVO**. Los proyectos `Daemon` y `Contracts` aún no existen como código (ver `docs/handoff.md`).
+
 ```
 FocusBlock/
-├── AGENTS.md                          # Fuente de contexto para IA
-├── CONTEXT.md                         # Bootstrap de sesión
-├── README.md                          # Visión general del proyecto
+├── AGENTS.md                          # Fuente de contexto estático para IA
+├── README.md                          # Portafolio (inglés)
+├── FocusBlock.slnx                    # Archivo solución (.NET 10)
 ├── .gitignore
 ├── .editorconfig
 │
 ├── src/
-│   ├── FocusBlock.sln                 # Archivo solución
 │   ├── FocusBlock.Tui/                # App TUI (espacio de usuario)
 │   │   ├── Program.cs                 # Entry point
 │   │   ├── App.cs                     # Configuración Terminal.Gui
@@ -80,16 +81,17 @@ FocusBlock/
 │       ├── Dockerfile.dev             # Hot-reload desarrollo
 │       └── docker-compose.yml         # Entorno desarrollo
 │
-├── docs/
-│   ├── README.md                      # Índice de documentación
-│   ├── aprendizaje/                   # Diario de aprendizaje
-│   ├── referencia/                    # Referencia técnica
-│   │   ├── arquitectura.md            # Este archivo
-│   │   ├── plan-desarrollo.md         # Estrategia testing + Docker
-│   │   └── phases.md                  # Fases con checkboxes
-│   └── diagramas/                     # Diagramas si es necesario
-│
-└── progreso/                          # Tracking por fase
+└── docs/
+    ├── index.md                       # Mapa de navegación
+    ├── vision.md                      # Visión y alcance global
+    ├── plan-fases.md                  # Fases con scope y criterios de salida
+    ├── handoff.md                     # Estado mutable (fase activa, próximo paso)
+    ├── arquitectura.md                # Este archivo
+    ├── plan-desarrollo.md             # Estrategia testing + Docker + deploy
+    ├── aprendizaje/                   # Conceptos aprendidos por fase
+    ├── progreso-log/                  # Log histórico por fase
+    ├── decisiones/                    # ADRs (on-demand)
+    └── diagramas/                     # Diagramas si es necesario
 ```
 
 ---
@@ -216,14 +218,18 @@ WantedBy=multi-user.target
 
 ## Decisiones de Arquitectura
 
-| Decisión | Elección | Alternativas | Por qué |
-|----------|----------|-------------|---------|
-| Framework TUI | Terminal.Gui v2 | Spectre.Console only | Widget set completo, nativo .NET |
-| IPC | Unix domain socket | D-Bus, HTTP | Rápido, sin dependencias, nativo Linux |
-| BD | SQLite + Dapper | EF Core, ADO.NET crudo | Simple, rápido, sin migraciones |
-| Hashing contraseñas | Argon2id | bcrypt, PBKDF2 | Memory-hard, estándar moderno |
-| Formato config | JSON | YAML, TOML | System.Text.Json integrado |
-| Escaneo procesos | /proc directo | Process.GetProcesses() | Más confiable en Linux |
-| Servicio | systemd | Docker only | Nativo de Arch |
-| Testing | xUnit + Moq + FluentAssertions | NUnit, MSTest | Estándar industria, mejor mocking |
-| Docker | Multi-stage build | Single stage | Imágenes producción pequeñas |
+Resumen de decisiones — el detalle (contexto, alternativas, consecuencias) vive en los ADRs (`docs/adr/`).
+
+| Decisión | ADR |
+|----------|-----|
+| Framework TUI: Terminal.Gui v2 | `docs/adr/ADR-001-terminal-gui.md` |
+| IPC: Unix domain socket | `docs/adr/ADR-002-ipc-unix-socket.md` |
+| BD: SQLite + Dapper | `docs/adr/ADR-003-sqlite-dapper.md` |
+| Hashing: Argon2id | `docs/adr/ADR-004-argon2id.md` |
+| Formato config: JSON | `docs/adr/ADR-005-config-json.md` |
+| Escaneo: `/proc` directo | `docs/adr/ADR-006-proc-scan.md` |
+| Servicio: systemd | `docs/adr/ADR-007-systemd.md` |
+| Testing: xUnit + Moq + FluentAssertions | `docs/adr/ADR-008-testing-stack.md` |
+| Docker: multi-stage | `docs/adr/ADR-009-docker-multistage.md` |
+| Target: .NET 10 | `docs/adr/ADR-010-dotnet-10-target.md` |
+| Driver: DOTNET (workaround) | `docs/adr/ADR-011-dotnet-driver.md` |

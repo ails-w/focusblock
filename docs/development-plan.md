@@ -116,7 +116,7 @@ tests/
 
 ```dockerfile
 # Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY ["src/FocusBlock.Daemon/FocusBlock.Daemon.csproj", "FocusBlock.Daemon/"]
@@ -128,7 +128,7 @@ WORKDIR "/src/FocusBlock.Daemon"
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
@@ -141,7 +141,7 @@ ENTRYPOINT ["dotnet", "FocusBlock.Daemon.dll"]
 ### Dockerfile.dev (Hot-Reload)
 
 ```dockerfile
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0
 WORKDIR /src
 
 COPY ["src/FocusBlock.Daemon/FocusBlock.Daemon.csproj", "FocusBlock.Daemon/"]
@@ -214,13 +214,13 @@ networks:
 dotnet publish -c Release -r linux-x64 --self-contained
 
 # Instalar daemon
-sudo cp src/FocusBlock.Daemon/bin/Release/net8.0/linux-x64/publish/FocusBlock.Daemon /opt/focusblock/
+sudo cp src/FocusBlock.Daemon/bin/Release/net10.0/linux-x64/publish/FocusBlock.Daemon /opt/focusblock/
 sudo cp config/focusblock-daemon.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now focusblock
 
 # Instalar TUI
-sudo cp src/FocusBlock.Tui/bin/Release/net8.0/linux-x64/publish/FocusBlock.Tui /usr/local/bin/
+sudo cp src/FocusBlock.Tui/bin/Release/net10.0/linux-x64/publish/FocusBlock.Tui /usr/local/bin/
 
 # Crear directorios requeridos
 sudo mkdir -p /etc/focusblock /var/lib/focusblock /run/focusblock

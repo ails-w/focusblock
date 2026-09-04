@@ -486,3 +486,6 @@ $RECYCLE.BIN/
 coverage*.xml
 cobertura.xml
 *.coverage
+
+# Local tooling cache
+.atl/
