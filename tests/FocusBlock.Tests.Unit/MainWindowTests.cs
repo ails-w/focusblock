@@ -13,4 +13,19 @@ public class MainWindowTests
         window.MenuBar.Should().NotBeNull();
         window.StatusBar.Should().NotBeNull();
     }
+
+    [Fact]
+    public void MainWindow_MenuNavigatesToViews()
+    {
+        var window = new MainWindow();
+
+        window.ShowView(window.BlockListView);
+        window.Content.Should().BeSameAs(window.BlockListView);
+
+        window.ShowView(window.AddBlockView);
+        window.Content.Should().BeSameAs(window.AddBlockView);
+
+        window.ShowView(window.StatusView);
+        window.Content.Should().BeSameAs(window.StatusView);
+    }
 }
