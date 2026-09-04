@@ -16,7 +16,7 @@
 | # | Nombre | Estado | Conceptos | Log |
 |---|--------|--------|-----------|-----|
 | 0 | Setup | ✅ | `learning/phase-00-setup.md` | `progress-log/phase-00-setup.md` |
-| 1 | Esqueleto TUI | ⏳ | `learning/phase-01-tui.md` | `progress-log/phase-01-tui.md` |
+| 1 | Esqueleto TUI | ✅ | `learning/phase-01-tui.md` | `progress-log/phase-01-tui.md` |
 | 2 | Configuración | ⏳ | `learning/phase-02-config.md` | `progress-log/phase-02-config.md` |
 | 3 | Daemon y monitor | ⏳ | `learning/phase-03-daemon.md` | `progress-log/phase-03-daemon.md` |
 | 4 | Núcleo bloqueador | ⏳ | `learning/phase-04-blocker.md` | `progress-log/phase-04-blocker.md` |
@@ -53,7 +53,7 @@
 
 ---
 
-## Fase 1 — Esqueleto TUI ⏳
+## Fase 1 — Esqueleto TUI ✅
 
 **Objetivo:** construir la estructura de la TUI: orquestación de la app, ventana principal con menú y navegación entre vistas placeholder.
 
@@ -70,43 +70,43 @@
 
 ### Conceptos de aprendizaje
 
-- [ ] Terminal.Gui v2: vistas, layout, navegación → `docs/learning/phase-01-tui.md`
-- [ ] Composición de UI con `IApplication` → `docs/learning/phase-01-tui.md`
+- [x] Terminal.Gui v2: vistas, layout, navegación → `docs/learning/phase-01-tui.md`
+- [x] Composición de UI con `IApplication` → `docs/learning/phase-01-tui.md`
 
 ### Criterio de salida
 
-- [ ] La TUI arranca y muestra MainWindow con menú.
-- [ ] La navegación entre vistas funciona con datos placeholder.
-- [ ] Tests unitarios de orquestación y vistas verdes.
+- [x] La TUI arranca y muestra MainWindow con menú.
+- [x] La navegación entre vistas funciona con datos placeholder.
+- [x] Tests unitarios de orquestación y vistas verdes.
 
 ### Features (TDD)
 
 #### Feature 1.1: Orquestación de la App
-- [ ] Escribir test: `FocusBlockApp_CreatesMainWindow` (RED)
-- [ ] Crear `App.cs` con clase `FocusBlockApp` (GREEN)
-- [ ] Refactorizar si es necesario
+- [x] Escribir test: `FocusBlockApp_CreatesMainWindow` (RED)
+- [x] Crear `App.cs` con clase `FocusBlockApp` (GREEN)
+- [x] Refactorizar si es necesario
 
 #### Feature 1.2: Ventana Principal con Menú
-- [ ] Escribir test: `MainWindow_HasMenuBarAndStatusBar` (RED)
-- [ ] Crear `Views/MainWindow.cs` con MenuBar, StatusBar (GREEN)
-- [ ] Implementar items de menú: Block, View, Settings, Help
+- [x] Escribir test: `MainWindow_HasMenuBarAndStatusBar` (RED)
+- [x] Crear `Views/MainWindow.cs` con MenuBar, StatusBar (GREEN)
+- [x] Implementar items de menú: Block, View, Settings, Help
 
 #### Feature 1.3: Navegación entre Vistas
-- [ ] Escribir test: `MainWindow_MenuNavigatesToViews` (RED)
-- [ ] Implementar lógica de cambio de vistas (GREEN)
+- [x] Escribir test: `MainWindow_MenuNavigatesToViews` (RED)
+- [x] Implementar lógica de cambio de vistas (GREEN)
 
 #### Feature 1.4: Vista de Estado
-- [ ] Escribir test: `StatusView_DisplaysDaemonStatus` (RED)
-- [ ] Crear `Views/StatusView.cs` (GREEN)
-- [ ] Implementar método `RefreshStatus()`
+- [x] Escribir test: `StatusView_DisplaysDaemonStatus` (RED)
+- [x] Crear `Views/StatusView.cs` (GREEN)
+- [x] Implementar método `RefreshStatus()`
 
 #### Feature 1.5: Lista de Bloqueos
-- [ ] Escribir test: `BlockListView_DisplaysListOfApps` (RED)
-- [ ] Crear `Views/BlockListView.cs` (GREEN)
+- [x] Escribir test: `BlockListView_DisplaysListOfApps` (RED)
+- [x] Crear `Views/BlockListView.cs` (GREEN)
 
 #### Feature 1.6: Agregar Bloqueo (Placeholder)
-- [ ] Escribir test: `AddBlockView_ShowsFormFields` (RED)
-- [ ] Crear `Views/AddBlockView.cs` con formulario placeholder (GREEN)
+- [x] Escribir test: `AddBlockView_ShowsFormFields` (RED)
+- [x] Crear `Views/AddBlockView.cs` con formulario placeholder (GREEN)
 
 ---
 

@@ -1,7 +1,7 @@
 # Fase 00 — Setup: Fundamentos del Proyecto
 
 > Conceptos de la fase de arranque: Terminal.Gui v2, .NET 10 y el entorno de pruebas.
-> Log de la fase (tareas, decisiones, problemas) → `docs/progress-log/phase-00-setup.md`
+> Log de la fase (tareas, decisiones, problemas) → [[../progress-log/phase-00-setup.md]]
 
 ---
 
@@ -21,7 +21,7 @@ FocusBlock usa `Application.Create()` → `IApplication` y `app.Run(window)` par
 
 ### Cómo se usa
 
-```csharp
+```cs
 var app = Application.Create();
 app.Run(window); // bloquea hasta que la ventana se cierra (Esc / RequestStop())
 ```
@@ -86,7 +86,7 @@ Workaround activo: sin él, el Hello World de FocusBlock muestra una ventana vac
 
 ### Cómo se usa
 
-```csharp
+```cs
 app.Init(DriverRegistry.Names.DOTNET);
 ```
 
@@ -117,7 +117,7 @@ En Terminal.Gui, la propiedad de posición es `Y` (mayúscula); escribir `y` fal
 
 ### Cómo se usa
 
-```csharp
+```cs
 label.Y = 1;   // correcto
 label.y = 1;   // CS0103: 'y' no existe
 ```
