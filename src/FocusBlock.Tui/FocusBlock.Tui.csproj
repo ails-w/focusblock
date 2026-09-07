@@ -11,4 +11,8 @@
     <PackageReference Include="Terminal.Gui" Version="2.4.17" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FocusBlock.Contracts\FocusBlock.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
