@@ -28,7 +28,7 @@ FocusBlock es una app TUI en C#/.NET 10 para bloquear aplicaciones en Arch Linux
 
 ## Mapa del repo
 
-Estructura completa (actual y objetivo) → `docs/architecture.md`. Los proyectos `Daemon` y `Contracts` son **estructura objetivo**, no código existente.
+Estructura completa (actual y objetivo) → `docs/architecture.md`. El proyecto `Daemon` es **estructura objetivo**, no código existente.
 
 ## Convenciones
 
@@ -36,6 +36,7 @@ Estructura completa (actual y objetivo) → `docs/architecture.md`. Los proyecto
 - **PascalCase** clases, `_camelCase` campos privados, 4 espacios, 100 chars — *Reason:* estándar .NET.
 - **Conventional commits**: `feat:`, `fix:`, `test:`, `docs:`, `refactor:` — *Reason:* historial legible y verificable.
 - **Sin "Co-Authored-By" ni atribución IA** — *Reason:* regla global del usuario.
+- **Docs: bloques de código con cabecera `cs`** (no `csharp`) — *Reason:* convención del usuario para render/Obsidian.
 
 ## TDD ESTRICTO (regla dura)
 
@@ -76,6 +77,7 @@ Este es un proyecto de **APRENDIZAJE**. El objetivo principal es que el estudian
 ## Git + Definition of Done
 
 - Commits: conventional commits en inglés.
+- **Commit al final de cada Feature**: test RED → GREEN → refactor → commit convencional del feature.
 - DoD de una feature: test RED que pasa (GREEN) + refactor + aprendizaje documentado en `docs/learning/phase-NN-name.md` + `docs/handoff.md` actualizado.
 - Nunca añadir "Co-Authored-By" ni atribución IA.
 
