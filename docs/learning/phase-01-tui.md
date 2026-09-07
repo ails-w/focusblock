@@ -21,7 +21,7 @@ La API estática de v1 no compila contra v2 y no permite manejar el ciclo de vid
 
 ### Cómo se usa
 
-```csharp
+```cs
 IApplication app = Application.Create();
 Window window = new() { Title = "FocusBlock" };
 window.Add(menuBar, content, statusBar);   // orden importa: el último se dibuja encima
@@ -54,7 +54,7 @@ Evita coordenadas "a ojo": el layout se adapta cuando cambia el contenedor o los
 
 ### Cómo se usa
 
-```csharp
+```cs
 field.X = Pos.Right(label) + 1;   // relativo: 1 espacio a la derecha del label
 field.Y = 1;                      // absoluto: fila 1
 field.Width = 20;                 // fijo (int → Dim implícito)
@@ -87,7 +87,7 @@ Los ítems del menú (Block → List, Block → New Block, View → Status) llam
 
 ### Cómo se usa
 
-```csharp
+```cs
 new MenuItem { Title = "_List", Action = () => ShowView(BlockListView) }
 ```
 
@@ -117,7 +117,7 @@ El acoplamiento. Si `FocusBlockApp` creara su `IApplication` internamente, no se
 
 ### Cómo se usa
 
-```csharp
+```cs
 // Producción (Program.cs)
 FocusBlockApp app = new(Application.Create());
 // Test
@@ -150,7 +150,7 @@ Que una clase no mezcle "cómo funciona la app" con "qué muestra la pantalla".
 
 ### Cómo se usa
 
-```csharp
+```cs
 // Presentational: no sabe de dónde viene el dato, solo lo muestra
 public void RefreshStatus(DaemonStatus status) => _statusLabel.Text = ...;
 ```
@@ -181,7 +181,7 @@ Transportar datos sin ceremonia: no hay setters, no hay `Equals` manual.
 
 ### Cómo se usa
 
-```csharp
+```cs
 var status = new DaemonStatus(IsRunning: true, Uptime: TimeSpan.FromMinutes(5), ActiveBlocks: 2);
 view.RefreshStatus(status);
 ```
@@ -212,7 +212,7 @@ Que la lista se actualice automáticamente al modificar los datos, sin redibujad
 
 ### Cómo se usa
 
-```csharp
+```cs
 _listView.SetSource(_apps);          // conecta la fuente al widget
 _apps.Clear(); foreach (var a in apps) _apps.Add(a);  // cambios → se reflejan
 ```
@@ -243,7 +243,7 @@ La suite de la fase (6 tests): estructura de `MainWindow`, navegación, `StatusV
 
 ### Cómo se usa
 
-```csharp
+```cs
 [Fact]
 public void FocusBlockApp_CreatesMainWindow()
 {

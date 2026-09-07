@@ -17,7 +17,7 @@
 |---|--------|--------|-----------|-----|
 | 0 | Setup | ✅ | `learning/phase-00-setup.md` | `progress-log/phase-00-setup.md` |
 | 1 | Esqueleto TUI | ✅ | `learning/phase-01-tui.md` | `progress-log/phase-01-tui.md` |
-| 2 | Configuración | ⏳ | `learning/phase-02-config.md` | `progress-log/phase-02-config.md` |
+| 2 | Configuración | ✅ | `learning/phase-02-config.md` | `progress-log/phase-02-config.md` |
 | 3 | Daemon y monitor | ⏳ | `learning/phase-03-daemon.md` | `progress-log/phase-03-daemon.md` |
 | 4 | Núcleo bloqueador | ⏳ | `learning/phase-04-blocker.md` | `progress-log/phase-04-blocker.md` |
 | 5 | Anti-bypass | ⏳ | `learning/phase-05-antibypass.md` | `progress-log/phase-05-antibypass.md` |
@@ -110,7 +110,7 @@
 
 ---
 
-## Fase 2 — Sistema de Configuración ⏳
+## Fase 2 — Sistema de Configuración ✅
 
 **Objetivo:** modelos de configuración, serialización JSON y hashing de contraseñas.
 
@@ -127,43 +127,43 @@
 
 ### Conceptos de aprendizaje
 
-- [ ] Records y modelos de configuración → `docs/learning/phase-02-config.md`
-- [ ] `System.Text.Json` round-trip y converters → `docs/learning/phase-02-config.md`
-- [ ] Async I/O en archivos → `docs/learning/phase-02-config.md`
-- [ ] Hashing de contraseñas (Argon2id, salt) → `docs/learning/phase-02-config.md`
+- [x] Records y modelos de configuración → `docs/learning/phase-02-config.md`
+- [x] `System.Text.Json` round-trip y converters → `docs/learning/phase-02-config.md`
+- [x] Async I/O en archivos → `docs/learning/phase-02-config.md`
+- [x] Hashing de contraseñas (Argon2id, salt) → `docs/learning/phase-02-config.md`
 
 ### Criterio de salida
 
-- [ ] `ConfigService` carga defaults si falta archivo y persiste cambios.
-- [ ] `AuthService` hash/verify con Argon2id pasa tests.
-- [ ] Suite unitaria de la fase verde.
+- [x] `ConfigService` carga defaults si falta archivo y persiste cambios.
+- [x] `AuthService` hash/verify con Argon2id pasa tests.
+- [x] Suite unitaria de la fase verde.
 
 ### Features (TDD)
 
 #### Feature 2.1: Modelos de Configuración
-- [ ] Escribir test: `AppConfig_DefaultValues_AreCorrect` (RED)
-- [ ] Crear proyecto `FocusBlock.Contracts/` (GREEN)
-- [ ] Crear modelos: `AppConfig`, `BlockRuleConfig`, `SecurityConfig`
-- [ ] Agregar a solución
+- [x] Escribir test: `AppConfig_DefaultValues_AreCorrect` (RED)
+- [x] Crear proyecto `FocusBlock.Contracts/` (GREEN)
+- [x] Crear modelos: `AppConfig`, `BlockRuleConfig`, `SecurityConfig`
+- [x] Agregar a solución
 
 #### Feature 2.2: Serialización JSON
-- [ ] Escribir test: `AppConfig_SerializeDeserialize_RoundTrips` (RED)
-- [ ] Implementar serialización con `System.Text.Json` (GREEN)
-- [ ] Manejar converter personalizado para `TimeOnly` si se necesita
+- [x] Escribir test: `AppConfig_SerializeDeserialize_RoundTrips` (RED)
+- [x] Implementar serialización con `System.Text.Json` (GREEN)
+- [x] Manejar converter personalizado para `TimeOnly` si se necesita
 
 #### Feature 2.3: Servicio de Configuración
-- [ ] Escribir test: `ConfigService_LoadAsync_ReturnsDefaults_WhenFileMissing` (RED)
-- [ ] Escribir test: `ConfigService_SaveAsync_PersistsToFile` (RED)
-- [ ] Crear `Services/ConfigService.cs` (GREEN)
-- [ ] Implementar carga/guardado con async/await
+- [x] Escribir test: `ConfigService_LoadAsync_ReturnsDefaults_WhenFileMissing` (RED)
+- [x] Escribir test: `ConfigService_SaveAsync_PersistsToFile` (RED)
+- [x] Crear `Services/ConfigService.cs` (GREEN)
+- [x] Implementar carga/guardado con async/await
 
 #### Feature 2.4: Hashing de Contraseñas
-- [ ] Escribir test: `AuthService_HashPassword_ReturnsHashAndSalt` (RED)
-- [ ] Escribir test: `AuthService_VerifyPassword_ReturnsTrue_WhenCorrect` (RED)
-- [ ] Escribir test: `AuthService_VerifyPassword_ReturnsFalse_WhenWrong` (RED)
-- [ ] Agregar paquete Argon2: `dotnet add package Konscious.Security.Cryptography.Argon2`
-- [ ] Crear `Services/AuthService.cs` (GREEN)
-- [ ] Implementar `HashPassword()` y `VerifyPassword()`
+- [x] Escribir test: `AuthService_HashPassword_ReturnsHashAndSalt` (RED)
+- [x] Escribir test: `AuthService_VerifyPassword_ReturnsTrue_WhenCorrect` (RED)
+- [x] Escribir test: `AuthService_VerifyPassword_ReturnsFalse_WhenWrong` (RED)
+- [x] Agregar paquete Argon2: `dotnet add package Konscious.Security.Cryptography.Argon2`
+- [x] Crear `Services/AuthService.cs` (GREEN)
+- [x] Implementar `HashPassword()` y `VerifyPassword()`
 
 ---
 
