@@ -1,5 +1,6 @@
-using FocusBlock.Contracts;
 using FluentAssertions;
+
+using FocusBlock.Contracts;
 
 namespace FocusBlock.Tests.Unit;
 

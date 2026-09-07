@@ -1,6 +1,7 @@
+using FluentAssertions;
+
 using FocusBlock.Contracts;
 using FocusBlock.Tui.Services;
-using FluentAssertions;
 
 namespace FocusBlock.Tests.Unit;
 
