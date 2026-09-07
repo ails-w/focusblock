@@ -1,5 +1,6 @@
-using FocusBlock.Tui.Views;
 using FluentAssertions;
+
+using FocusBlock.Tui.Views;
 
 namespace FocusBlock.Tests.Unit;
 

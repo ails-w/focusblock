@@ -1,7 +1,10 @@
+using FluentAssertions;
+
 using FocusBlock.Tui;
 using FocusBlock.Tui.Views;
-using FluentAssertions;
+
 using Moq;
+
 using Terminal.Gui.App;
 
 namespace FocusBlock.Tests.Unit;
