@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\FocusBlock.Tui\FocusBlock.Tui.csproj" />
+    <ProjectReference Include="..\..\src\FocusBlock.Contracts\FocusBlock.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
