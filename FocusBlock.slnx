@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/FocusBlock.Contracts/FocusBlock.Contracts.csproj" />
+    <Project Path="src/FocusBlock.Daemon/FocusBlock.Daemon.csproj" />
     <Project Path="src/FocusBlock.Tui/FocusBlock.Tui.csproj" />
   </Folder>
   <Folder Name="/tests/">
