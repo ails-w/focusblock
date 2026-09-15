@@ -217,11 +217,11 @@
 - [x] Implementar helper `ExtractProcessName()`
 
 #### Feature 3.3: Ejecutor de Bloqueos
-- [ ] Escribir test: `BlockEnforcer_KillProcess_SendsSigterm` (RED)
-- [ ] Crear `Services/BlockEnforcer.cs` (GREEN)
-- [ ] Implementar P/Invoke `kill()` syscall
-- [ ] Escribir test: `BlockEnforcer_EscalatesToSigkill_WhenSigtermFails` (RED)
-- [ ] Implementar escalación SIGTERM → SIGKILL
+- [x] Escribir test: `BlockEnforcer_KillProcessAsync_SendsSigterm` (RED)
+- [x] Crear `Services/BlockEnforcer.cs` (GREEN)
+- [x] Implementar P/Invoke `kill()` syscall
+- [x] Escribir test: `BlockEnforcer_KillProcessAsync_EscalatesToSigkill_WhenSigtermFails` (RED)
+- [x] Implementar escalación SIGTERM → SIGKILL
 
 #### Feature 3.4: Servidor IPC
 - [ ] Escribir test: `IpcServer_HandlesStatusRequest` (RED)
