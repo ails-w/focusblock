@@ -4,24 +4,25 @@
 > Historial por fase → `docs/progress-log/`. Conceptos → `docs/learning/`.
 > Aprendizajes y decisiones persistentes → Engram (memoria).
 
-**Última actualización**: 2026-09-07
+**Última actualización**: 2026-09-15
 
 ## Estado actual
 
 | | |
 |---|---|
-| **Fase activa** | Fase 3 — Daemon |
+| **Fase activa** | Fase 3 — Daemon (en curso) |
 | **Última completada** | Fase 2 — Configuración ✅ |
-| **Progreso** | Fases 0, 1 y 2 completadas · Fase 3 sin iniciar |
+| **Progreso** | Fases 0, 1 y 2 ✅ · Fase 3: 3.1 (Worker) y 3.2 (ProcessMonitor) ✅, 3.3–3.5 pendientes |
 
 ## Próximo paso
 
-Fase 3 — Feature 3.1: escribir test `Worker_StartsAndRunsUntilCancelled` (RED), crear proyecto `FocusBlock.Daemon/` con `Worker.cs` (BackgroundService) (GREEN).
+Fase 3 — Feature 3.3 (BlockEnforcer): escribir test `BlockEnforcer_KillProcess_SendsSigterm` (RED), crear `Services/BlockEnforcer.cs` (GREEN), implementar P/Invoke `kill()`.
 
 ## Decisiones pendientes
 
 - Verificar si el driver ANSI de Terminal.Gui ya está estable en una versión futura (para quitar el workaround del driver DOTNET si conviene).
 - Revisar ADR-012 cuando se quieran las estrategias de bloqueo por uso (Racha/Tope) — requieren telemetría del daemon.
+- Argon2id: los parámetros (`MemorySize`, `Iterations`) NO se guardan con el hash, así que subirlos invalida las huellas existentes. Evaluar formato PHC (`$argon2id$...`) antes de Fase 5 (anti-bypass).
 
 ## Riesgos activos / Gotchas
 
