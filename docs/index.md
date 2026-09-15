@@ -29,5 +29,5 @@ Mapa de navegación de la documentación del proyecto. Este es el **índice úni
 - Idioma: Español. Nombres de carpetas/archivos en inglés.
 - Formato: Markdown.
 - Mantener `handoff.md` actualizado al iniciar/cerrar sesión.
-- Cada fase crea `learning/phase-NN-name.md` y `progress-log/phase-NN-name.md` al comenzar.
+- Al **cerrar** cada fase se crean o actualizan: `learning/phase-NN-name.md` (conceptos aprendidos), `progress-log/phase-NN-name.md` (historial), `phase-plan.md` (estado y features) y `handoff.md` (estado actual).
 - ADRs: una decisión = un archivo en `docs/adr/`; cada ADR refleja la decisión vigente y se actualiza cuando la decisión cambia.

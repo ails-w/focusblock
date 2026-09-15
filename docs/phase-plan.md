@@ -9,7 +9,7 @@
 - TDD estricto: RED → GREEN → REFACTOR (test ANTES de implementar).
 - Código en inglés, docs en español.
 - Commits convencionales (feat:, fix:, test:, docs:, refactor:).
-- Al cerrar una fase: actualizar log + conceptos + phase-plan + handoff + commit.
+- Al cerrar una fase: actualizar `progress-log/`, `learning/`, `phase-plan.md` (estado y features) y `handoff.md` + commit.
 
 ## Resumen de fases
 

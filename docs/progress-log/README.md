@@ -20,7 +20,7 @@ Log HISTÓRICO de desarrollo por fase. Backup manual del estado + historial de d
 
 ## Cómo Usar
 
-Al final de cada sesión de desarrollo:
+Al **cerrar cada fase** (y opcionalmente al cerrar una sesión de desarrollo):
 
 1. Actualizar el log de la fase actual con el progreso.
 2. Marcar tareas completadas con `[x]` y fecha.

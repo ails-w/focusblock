@@ -36,5 +36,5 @@ Usar `template-phase.md` para cada fase nueva. Cada archivo abre con un **glosar
 ## Reglas
 
 - Se acumula: los conceptos aprendidos NUNCA se borran.
-- Se escribe durante la fase, no al final (aprendizaje justo-a-tiempo).
+- Se escribe **al cerrar la fase**, a partir de lo aprendido durante ella.
 - Cada concepto debe tener su "Error común" — es lo que demuestra comprensión real.
