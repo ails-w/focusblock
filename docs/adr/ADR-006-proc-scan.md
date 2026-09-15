@@ -22,4 +22,4 @@ Escaneo directo de **`/proc`** (leer `/proc/[pid]/status` y extraer el nombre).
 
 ## Referencias
 
-- Fase 3 (`docs/learning/phase-03-daemon.md`)
+- Fase 3 (docs/learning/phase-03-daemon.md — pendiente)

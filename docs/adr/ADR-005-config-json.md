@@ -9,7 +9,7 @@ Las reglas de bloqueo, horarios y seguridad necesitan un formato de configuraci�
 
 ## Decisión
 
-**JSON** con `System.Text.Json` (round-trip, converters si hace falta para `TimeOnly`).
+**JSON** con `System.Text.Json` (round-trip). En .NET 10 **no hace falta ningún converter para `TimeOnly`**: el soporte es nativo desde .NET 7, y el test de round-trip lo verificó (ver `docs/learning/phase-02-config.md`).
 
 ## Alternativas consideradas
 

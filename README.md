@@ -71,7 +71,7 @@ dotnet run --project src/FocusBlock.Tui
 
 - Unit: `dotnet test` — services, rule engine, cooldown, auth
 - Integration: real SQLite, `/proc`, IPC socket, `chattr +i`
-- Functional: daemon lifecycle in Docker (see `docs/development-plan.md`)
+- Functional: daemon lifecycle on the host (see `docs/development-plan.md`)
 
 ## What I Learned / Key Decisions
 
@@ -89,7 +89,7 @@ dotnet run --project src/FocusBlock.Tui
 
 - [ ] Anti-bypass: challenge dialog + early-stop flow
 - [ ] Usage metrics view with ASCII charts
-- [ ] Docker deployment of the daemon
+- [ ] Native systemd packaging and install script for the daemon
 
 ## License
 

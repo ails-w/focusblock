@@ -1,6 +1,6 @@
 # Plan de Desarrollo
 
-Estrategia de testing, Docker y checklist de deployment.
+Estrategia de testing, puntos de inyección y checklist de deployment.
 
 ---
 
@@ -8,12 +8,12 @@ Estrategia de testing, Docker y checklist de deployment.
 
 ```
         ╱╲
-       ╱  ╲      Funcional (Docker compose)
+       ╱  ╲      Funcional (host)
       ╱    ╲     — Tests de sistema completo
      ╱──────╲    — Ciclo de vida del daemon, E2E blocking
     ╱        ╲   — Solo flujos críticos
    ╱──────────╲
-  ╱            ╲  Integración (TestContainers)
+  ╱            ╲  Integración (host real, categorías)
  ╱              ╲ — Cliente/servidor IPC
 ╱────────────────╲— Operaciones SQLite
 ╱                  ╲
@@ -45,7 +45,7 @@ Cada feature se desarrolla así:
 │  4. INTEGRACIÓN ── Test de integración si toca límites   │
 │       │           externos (SQLite, IPC, /proc)          │
 │       ▼                                                  │
-│  5. FUNCIONAL ── Test E2E con Docker solo si crítico     │
+│  5. FUNCIONAL ── Test E2E en el host solo si crítico     │
 │       │                                                  │
 │       ▼                                                  │
 │  6. REPETIR ──── Volver al paso 1 con siguiente feature  │
@@ -64,7 +64,7 @@ Cada feature se desarrolla así:
 
 ## Convención de Nombres de Tests
 
-```csharp
+```cs
 // Patrón: Method_Condition_ExpectedResult
 
 [Fact]
@@ -82,16 +82,14 @@ public void BlockRule_IsAppBlocked_ReturnsCorrectResult(string appName, bool exp
 
 ```
 tests/
-├── FocusBlock.Tests.Unit/
-│   ├── Services/
-│   │   ├── BlockServiceTests.cs
-│   │   ├── ProcessMonitorTests.cs
-│   │   └── RuleEngineTests.cs
-│   └── Models/
-│       └── BlockRuleTests.cs
-│
-└── FocusBlock.Tests.Integration/    # Agregar cuando se necesite
-    ├── FocusBlockFixture.cs
+├── FocusBlock.Tests.Unit/           # Layout plano: un archivo por clase bajo test
+│   ├── AppConfigTests.cs
+│   ├── AuthServiceTests.cs
+│   ├── ConfigServiceTests.cs
+│   ├── ProcessMonitorTests.cs
+│   ├── WorkerTests.cs
+│   └── ...
+└── FocusBlock.Tests.Integration/    # Futuro: tests de host real (categoría Integration)
     └── IpcIntegrationTests.cs
 ```
 
@@ -103,107 +101,33 @@ tests/
 |---------|----------|-------------|-----------|
 | Carga/guardado config | ✅ JSON round-trip | ✅ Archivo real | ❌ |
 | Reglas de bloqueo | ✅ Todas las rutas lógicas | ❌ | ❌ |
-| Monitor de procesos | ✅ Evaluación de horario | ✅ Lectura /proc real | ✅ Daemon en Docker |
+| Monitor de procesos | ✅ Parseo de `/proc` con fuente fake | ✅ Lectura /proc real | ✅ Daemon en host |
 | Protocolo IPC | ✅ Serialización mensajes | ✅ Socket real | ✅ Daemon completo |
 | Anti-bypass | ✅ Hashing contraseñas | ✅ chattr +i | ✅ Flujo completo |
 | Métricas | ✅ Queries SQLite | ✅ DB real | ✅ Pipeline completo |
 
 ---
 
-## Docker
+## Puntos de inyección (seams)
 
-### Dockerfile.daemon (Multi-stage Build)
+Las dependencias del sistema operativo (filesystem, `/proc`, señales, `chattr`, reloj, sockets, SQLite) **no deben filtrarse a los tests unitarios**. Se aíslan detrás de un **punto de inyección (seam)**: una interfaz o parámetro que en producción usa la implementación real y en los tests se reemplaza por un **doble** (fake). El comportamiento que toca el kernel de verdad se cubre con tests de **integración en el host**.
 
-```dockerfile
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
+| Componente | Dependencia del SO | Punto de inyección (seam) | Doble para unit | Test real de integración |
+|------------|--------------------|----------------------------|-----------------|--------------------------|
+| `ConfigService` | Filesystem | ruta inyectada por constructor | ruta temporal | archivo real |
+| `AuthService` | CSPRNG | (sin seam: el salt se inyecta/verifica; salida determinista dada la sal) | salt fijo | — |
+| `ProcessMonitor` | `/proc` | `IProcessSource` (enumerar + leer) | fuente fake en memoria | `/proc` real |
+| `BlockEnforcer` | syscall `kill()` | `ISignalSender` | sender fake que registra señales | proceso dummy (`sleep`) |
+| `IpcServer` | Unix socket | ruta del socket inyectada | path temporal | cliente/servidor real |
+| `BlockEngine` | reloj | `TimeProvider` | `FakeTimeProvider` | — |
+| `CooldownManager` | reloj | `TimeProvider` | `FakeTimeProvider` | — |
+| `FileProtector` | `chattr +i` (ioctl) | `IFileAttributes` | fake que registra flags | FS real con root |
+| `MetricsCollector` | SQLite | connection string / path | SQLite temporal | archivo real |
+| `IpcClient` | socket | ruta + socket | servidor fake | daemon real |
 
-COPY ["src/FocusBlock.Daemon/FocusBlock.Daemon.csproj", "FocusBlock.Daemon/"]
-COPY ["src/FocusBlock.Contracts/FocusBlock.Contracts.csproj", "FocusBlock.Contracts/"]
-RUN dotnet restore "FocusBlock.Daemon/FocusBlock.Daemon.csproj"
+> Los tests de integración están **etiquetados por categoría** (`Category=Integration`) y se **saltan** cuando faltan privilegios (por ejemplo, `chattr +i` sin root).
 
-COPY . .
-WORKDIR "/src/FocusBlock.Daemon"
-RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
-
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
-WORKDIR /app
-COPY --from=build /app/publish .
-
-RUN useradd -m focusblock
-USER focusblock
-
-ENTRYPOINT ["dotnet", "FocusBlock.Daemon.dll"]
-```
-
-### Dockerfile.dev (Hot-Reload)
-
-```dockerfile
-FROM mcr.microsoft.com/dotnet/sdk:10.0
-WORKDIR /src
-
-COPY ["src/FocusBlock.Daemon/FocusBlock.Daemon.csproj", "FocusBlock.Daemon/"]
-COPY ["src/FocusBlock.Contracts/FocusBlock.Contracts.csproj", "FocusBlock.Contracts/"]
-RUN dotnet restore
-
-COPY . .
-
-ENTRYPOINT ["dotnet", "watch", "run", "--project", "FocusBlock.Daemon"]
-```
-
-### docker-compose.yml
-
-```yaml
-version: '3.8'
-
-services:
-  daemon:
-    build:
-      context: .
-      dockerfile: config/docker/Dockerfile.daemon
-    container_name: focusblock-daemon
-    restart: unless-stopped
-    volumes:
-      - focusblock-data:/app/data
-      - /proc:/host/proc:ro
-    environment:
-      - DOTNET_ENVIRONMENT=Production
-      - FocusBlock__DataPath=/app/data
-    networks:
-      - focusblock-network
-
-  daemon-dev:
-    build:
-      context: .
-      dockerfile: config/docker/Dockerfile.dev
-    container_name: focusblock-daemon-dev
-    volumes:
-      - ./src:/src
-      - focusblock-data:/app/data
-    environment:
-      - DOTNET_ENVIRONMENT=Development
-    networks:
-      - focusblock-network
-
-volumes:
-  focusblock-data:
-
-networks:
-  focusblock-network:
-    driver: bridge
-```
-
-### Uso de Docker por Fase
-
-| Fase | Docker | Por qué |
-|------|--------|---------|
-| 0-2 | ❌ | Desarrollo local, aprendizaje |
-| 3 | ✅ `docker-compose up daemon` | Probar daemon en entorno Linux aislado |
-| 4-5 | ✅ `docker-compose up daemon-dev` | Probar bloqueo con hot-reload |
-| 6 | ✅ Tests de integración | SQLite en contenedor |
-| 7 | ✅ Compose completo | Testing final, preparación deployment |
+> **Extra opcional:** Docker multi-stage vive en `docs/extras/docker-multistage.md` como material de aprendizaje. No es el runtime del daemon ni una estrategia de testing.
 
 ---
 

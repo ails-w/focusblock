@@ -1,6 +1,6 @@
 # ADR-0NN: Título de la decisión
 
-- **Estado**: Aceptado | Propuesto | Reemplazado por ADR-0NN
+- **Estado**: Aceptado | Propuesto | Obsoleto
 - **Fecha**: YYYY-MM-DD
 
 ## Contexto

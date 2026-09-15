@@ -14,7 +14,7 @@ Los ADR (*Architecture Decision Records*) registran las decisiones técnicas imp
 | `ADR-006-proc-scan.md` | Escaneo `/proc` directo |
 | `ADR-007-systemd.md` | Servicio systemd |
 | `ADR-008-testing-stack.md` | Stack de testing |
-| `ADR-009-docker-multistage.md` | Docker multi-stage |
+| `ADR-009-testing-seams.md` | Testing por puntos de inyección (seams) |
 | `ADR-010-dotnet-10-target.md` | Target .NET 10 |
 | `ADR-011-dotnet-driver.md` | Driver DOTNET de Terminal.Gui |
 | `ADR-012-blocking-strategies.md` | Estrategias de bloqueo: Schedule-only por ahora |
@@ -28,9 +28,8 @@ Los ADR (*Architecture Decision Records*) registran las decisiones técnicas imp
 ## Reglas
 
 - Una decisión = un archivo `ADR-0NN-nombre.md`.
-- Numeración secuencial; **no reescribir** ADRs pasados (son historia).
-- Si una decisión cambia, se crea un ADR nuevo con Estado "Reemplazado por ADR-0NN".
-- Estados: `Propuesto` → `Aceptado` → `Reemplazado`.
+- Un ADR refleja la decisión **vigente hoy**: cuando una decisión cambia, el ADR se actualiza en el lugar (la historia vive en git, no duplicada en docs).
+- Estados: `Propuesto` → `Aceptado` → `Obsoleto`.
 - Usar `template-adr.md`.
 
 ## Resumen en architecture

@@ -11,7 +11,7 @@ Al finalizar el proyecto, debe servir como evidencia práctica de dominio en:
 - Programación de sistemas en Linux (/proc, señales, chattr +i, systemd).
 - Persistencia con SQLite + Dapper.
 - Testing profesional (TDD estricto, xUnit + Moq + FluentAssertions).
-- Contenerización con Docker multi-stage.
+- Diseño de puntos de inyección (seams) para testear código que depende del sistema operativo.
 - Seguridad básica (hashing Argon2, anti-bypass).
 
 ## Alcance funcional
@@ -70,7 +70,7 @@ Primero se domina el monolito modular TUI + daemon. Después se evalúa crecer.
 ### DevOps y herramientas
 
 - Git con conventional commits.
-- Docker multi-stage + Docker Compose.
+- Testing por seams + integración en host.
 - .NET CLI (build, test, publish).
 
 ## Principio de aprendizaje

@@ -14,7 +14,8 @@ Mapa de navegación de la documentación del proyecto. Este es el **índice úni
 | Decisiones | `docs/adr/` | ADRs (`ADR-0NN-*.md`) |
 | Arquitectura | `docs/architecture.md` | Arquitectura, IPC, SQLite, systemd |
 | Diagramas | `docs/diagrams/` | Diagramas ASCII/Mermaid |
-| Desarrollo | `docs/development-plan.md` | Testing, Docker, deployment |
+| Desarrollo | `docs/development-plan.md` | Testing, puntos de inyección, deployment |
+| Extras | `docs/extras/` | Temas opcionales fuera de las fases |
 
 ## Fuera de docs
 
@@ -29,4 +30,4 @@ Mapa de navegación de la documentación del proyecto. Este es el **índice úni
 - Formato: Markdown.
 - Mantener `handoff.md` actualizado al iniciar/cerrar sesión.
 - Cada fase crea `learning/phase-NN-name.md` y `progress-log/phase-NN-name.md` al comenzar.
-- ADRs: una decisión = un archivo en `docs/adr/`; nunca reescribir historial (superceder con ADR nuevo).
+- ADRs: una decisión = un archivo en `docs/adr/`; cada ADR refleja la decisión vigente y se actualiza cuando la decisión cambia.

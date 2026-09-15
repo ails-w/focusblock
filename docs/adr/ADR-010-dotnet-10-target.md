@@ -9,7 +9,7 @@ El plan original indicaba .NET 8, pero en el entorno solo está instalado el SDK
 
 ## Decisión
 
-Target **`net10.0`** para todos los proyectos (TUI y tests). La solución usa el formato `.slnx` que genera el SDK 10.
+Target **`net10.0`** para los cuatro proyectos (`FocusBlock.Tui`, `FocusBlock.Daemon`, `FocusBlock.Contracts` y `FocusBlock.Tests.Unit`). La solución usa el formato `.slnx` que genera el SDK 10.
 
 ## Alternativas consideradas
 
