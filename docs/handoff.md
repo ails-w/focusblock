@@ -12,11 +12,11 @@
 |---|---|
 | **Fase activa** | Fase 3 — Daemon (en curso) |
 | **Última completada** | Fase 2 — Configuración ✅ |
-| **Progreso** | Fases 0, 1 y 2 ✅ · Fase 3: 3.1 (Worker) y 3.2 (ProcessMonitor) ✅, 3.3–3.5 pendientes |
+| **Progreso** | Fases 0, 1 y 2 ✅ · Fase 3: 3.1 (Worker), 3.2 (ProcessMonitor) y 3.3 (BlockEnforcer) ✅ · pendiente: 3.4 (IpcServer) |
 
 ## Próximo paso
 
-Fase 3 — Feature 3.3 (BlockEnforcer): escribir test `BlockEnforcer_KillProcess_SendsSigterm` (RED), crear `Services/BlockEnforcer.cs` (GREEN), implementar P/Invoke `kill()`.
+Fase 3 — Feature 3.4 (IpcServer): escribir test `IpcServer_HandlesStatusRequest` (RED), crear `Services/IpcServer.cs` con escucha de Unix socket en una ruta inyectada (GREEN), implementar enrutamiento de `status`/`add_block`/`remove_block`.
 
 ## Decisiones pendientes
 
@@ -31,6 +31,7 @@ Fase 3 — Feature 3.3 (BlockEnforcer): escribir test `BlockEnforcer_KillProcess
 - ⚠️ **La doc oficial de Terminal.Gui a veces miente** — verificar el API contra la DLL (`Terminal.Gui.xml`) antes de codificar.
 - ⚠️ **`.slnx` en .NET 10** — `dotnet new sln` genera el formato XML nuevo, no el `.sln` clásico.
 - ℹ️ **Case-sensitivity** — las propiedades de librerías son PascalCase (`Y`, no `y`).
+- ⚠️ **Race de reuso de PID en `BlockEnforcer`** — entre el SIGTERM y el chequeo de vida, el PID puede reciclarse y señalarse otro proceso. Mitigación completa: comparar el start-time de `/proc/<pid>/stat` (Fase 4).
 
 ## Entorno
 
