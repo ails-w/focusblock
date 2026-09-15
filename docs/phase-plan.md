@@ -18,7 +18,7 @@
 | 0 | Setup | ✅ | `learning/phase-00-setup.md` | `progress-log/phase-00-setup.md` |
 | 1 | Esqueleto TUI | ✅ | `learning/phase-01-tui.md` | `progress-log/phase-01-tui.md` |
 | 2 | Configuración | ✅ | `learning/phase-02-config.md` | `progress-log/phase-02-config.md` |
-| 3 | Daemon y monitor | 🔨 | `learning/phase-03-daemon.md` | `progress-log/phase-03-daemon.md` |
+| 3 | Daemon y monitor | ✅ | `learning/phase-03-daemon.md` | `progress-log/phase-03-daemon.md` |
 | 4 | Núcleo bloqueador | ⏳ | `learning/phase-04-blocker.md` | `progress-log/phase-04-blocker.md` |
 | 5 | Anti-bypass | ⏳ | `learning/phase-05-antibypass.md` | `progress-log/phase-05-antibypass.md` |
 | 6 | Métricas | ⏳ | `learning/phase-06-metrics.md` | `progress-log/phase-06-metrics.md` |
@@ -169,11 +169,11 @@
 
 ---
 
-## Fase 3 — Daemon y Monitor de Procesos 🔨 En curso
+## Fase 3 — Daemon y Monitor de Procesos ✅
 
 **Objetivo:** daemon root que monitorea `/proc`, mata procesos y sirve IPC por Unix socket.
 
-**Progreso:** Features 3.1 (Worker), 3.2 (ProcessMonitor), 3.3 (BlockEnforcer) y 3.4 (IpcServer) implementadas. El cableado de `IpcServer` en `Program.cs` y un `IIpcRequestHandler` real quedan para la Fase 4 (BlockEngine).
+**Cerrada:** 2026-09-15. Features 3.1–3.4 implementadas y testeadas (32 tests). El **cableado end-to-end** (`Program.cs`, mapeo nombre→PID, handler IPC real) se difiere a Fase 4 (BlockEngine). Detalle → `docs/progress-log/phase-03-daemon.md`.
 
 ### Scope
 
@@ -188,18 +188,19 @@
 
 ### Conceptos de aprendizaje
 
-- [ ] `BackgroundService` y ciclo de vida del worker → `docs/learning/phase-03-daemon.md`
-- [ ] Escaneo de `/proc` en Linux → `docs/learning/phase-03-daemon.md`
-- [ ] P/Invoke y señales (SIGTERM/SIGKILL) → `docs/learning/phase-03-daemon.md`
-- [ ] Unix domain sockets (servidor) → `docs/learning/phase-03-daemon.md`
+- [x] `BackgroundService` y ciclo de vida del worker → `docs/learning/phase-03-daemon.md`
+- [x] Escaneo de `/proc` en Linux → `docs/learning/phase-03-daemon.md`
+- [x] P/Invoke y señales (SIGTERM/SIGKILL) → `docs/learning/phase-03-daemon.md`
+- [x] Unix domain sockets (servidor) → `docs/learning/phase-03-daemon.md`
 
 **Puntos de inyección:** `IProcessSource` (`/proc`), `ISignalSender` (`kill`) y ruta del socket.
 
 ### Criterio de salida
 
-- [ ] Daemon arranca como servicio, escanea procesos y mata por nombre.
-- [ ] Responde a requests IPC (status, add_block, remove_block).
-- [ ] Tests unitarios + integración verdes.
+- [x] Componentes del daemon implementados y testeados (Worker, ProcessMonitor, BlockEnforcer, IpcServer).
+- [~] Daemon arranca como servicio, escanea procesos y mata por nombre → **cableado end-to-end diferido a Fase 4**.
+- [~] Responde a requests IPC (status, add_block, remove_block) → **handler real diferido a Fase 4**.
+- [x] Tests unitarios + integración verdes (32).
 
 ### Features (TDD)
 

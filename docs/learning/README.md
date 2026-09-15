@@ -9,7 +9,7 @@ Cada fase documenta los CONCEPTOS aprendidos en **UN archivo** `phase-NN-name.md
 | 0 | `phase-00-setup.md` | ✅ |
 | 1 | `phase-01-tui.md` | ✅ |
 | 2 | `phase-02-config.md` | ✅ |
-| 3 | `phase-03-daemon.md` | ⏳ |
+| 3 | `phase-03-daemon.md` | ✅ |
 | 4 | `phase-04-blocker.md` | ⏳ |
 | 5 | `phase-05-antibypass.md` | ⏳ |
 | 6 | `phase-06-metrics.md` | ⏳ |

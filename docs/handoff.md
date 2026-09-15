@@ -10,13 +10,13 @@
 
 | | |
 |---|---|
-| **Fase activa** | Fase 3 — Daemon (en curso) |
-| **Última completada** | Fase 2 — Configuración ✅ |
-| **Progreso** | Fases 0, 1 y 2 ✅ · Fase 3: 3.1–3.4 implementadas y testeadas (32 tests) · falta el cableado end-to-end del daemon |
+| **Fase activa** | Fase 4 — Núcleo del Bloqueador |
+| **Última completada** | Fase 3 — Daemon ✅ |
+| **Progreso** | Fases 0, 1, 2 y 3 ✅ · Fase 4 sin iniciar (32 tests verdes) |
 
 ## Próximo paso
 
-Cerrar Fase 3: escribir `docs/learning/phase-03-daemon.md` y `docs/progress-log/phase-03-daemon.md`. Decidir el cableado end-to-end (Worker + ProcessMonitor + BlockEnforcer + IpcServer) — depende del BlockEngine de Fase 4.
+Fase 4 — Feature 4.1 (BlockEngine): escribir test `BlockEngine_Evaluate_ReturnsBlock_WhenInSchedule` (RED), crear `Services/BlockEngine.cs` (GREEN) con `TimeProvider` inyectable. El cableado end-to-end del daemon (mapeo nombre→PID + handler IPC real) es parte de esta fase.
 
 ## Decisiones pendientes
 
@@ -32,7 +32,7 @@ Cerrar Fase 3: escribir `docs/learning/phase-03-daemon.md` y `docs/progress-log/
 - ⚠️ **`.slnx` en .NET 10** — `dotnet new sln` genera el formato XML nuevo, no el `.sln` clásico.
 - ℹ️ **Case-sensitivity** — las propiedades de librerías son PascalCase (`Y`, no `y`).
 - ⚠️ **Race de reuso de PID en `BlockEnforcer`** — entre el SIGTERM y el chequeo de vida, el PID puede reciclarse y señalarse otro proceso. Mitigación completa: comparar el start-time de `/proc/<pid>/stat` (Fase 4).
-- ⚠️ **Fase 3 sin cablear** — `Worker`, `ProcessMonitor`, `BlockEnforcer` e `IpcServer` existen y están testeados, pero `Program.cs` solo registra `Worker`, y `IpcServer` no tiene un `IIpcRequestHandler` real. El daemon todavía no escanea ni mata en runtime; el mapeo nombre→PID y el handler real dependen del BlockEngine (Fase 4).
+- ⚠️ **Daemon sin cablear (entrada de Fase 4)** — `Worker`, `ProcessMonitor`, `BlockEnforcer` e `IpcServer` existen y están testeados, pero `Program.cs` solo registra `Worker` y `IpcServer` no tiene handler real. Fase 4 debe: mapear nombre→PID, implementar el handler IPC y registrar todo en DI.
 
 ## Entorno
 
