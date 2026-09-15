@@ -173,7 +173,7 @@
 
 **Objetivo:** daemon root que monitorea `/proc`, mata procesos y sirve IPC por Unix socket.
 
-**Progreso:** Features 3.1 (Worker) y 3.2 (ProcessMonitor) completadas — commits `a559bc8` y `f6fc68d`. Pendientes: 3.3 (BlockEnforcer) y 3.4 (IpcServer).
+**Progreso:** Features 3.1 (Worker), 3.2 (ProcessMonitor), 3.3 (BlockEnforcer) y 3.4 (IpcServer) implementadas. El cableado de `IpcServer` en `Program.cs` y un `IIpcRequestHandler` real quedan para la Fase 4 (BlockEngine).
 
 ### Scope
 
@@ -224,11 +224,14 @@
 - [x] Implementar escalación SIGTERM → SIGKILL
 
 #### Feature 3.4: Servidor IPC
-- [ ] Escribir test: `IpcServer_HandlesStatusRequest` (RED)
-- [ ] Crear `Services/IpcServer.cs` (GREEN)
-- [ ] Implementar escuchador Unix socket
-- [ ] Escribir test: `IpcServer_HandlesAddBlockRequest` (RED)
-- [ ] Implementar enrutamiento de mensajes
+- [x] Escribir test: `IpcServer_HandlesStatusRequest` (RED)
+- [x] Crear `Services/IpcServer.cs` (GREEN)
+- [x] Implementar escuchador Unix socket
+- [x] Escribir test: `IpcServer_HandlesAddBlockRequest` (RED)
+- [x] Implementar enrutamiento de mensajes
+- [x] Escribir test: `IpcServer_ReturnsError_WhenRequestIsMalformed` (RED)
+- [x] Escribir test: `IpcServer_HandlesMultipleRequests_OnSameConnection` (RED)
+- [x] Escribir test: `IpcServer_DeletesSocketFile_AfterStop` (RED)
 
 ---
 
