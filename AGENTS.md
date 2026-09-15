@@ -77,8 +77,9 @@ Este es un proyecto de **APRENDIZAJE**. El objetivo principal es que el estudian
 ## Git + Definition of Done
 
 - Commits: conventional commits en inglés.
-- **Commit al final de cada Feature**: test RED → GREEN → refactor → commit convencional del feature.
-- DoD de una feature: test RED que pasa (GREEN) + refactor + aprendizaje documentado en `docs/learning/phase-NN-name.md` + `docs/handoff.md` actualizado.
+- **Commit + PR al final de cada Feature**: test RED → GREEN → refactor → commit convencional → PR.
+- **Una PR por feature**: rama `feat/N.N-nombre` → PR a `main` → CI (`Lint`/`Build`/`Test`) → merge. Objetivo **≤400 líneas** por PR; si no entra, se parte por feature (no `size:exception`).
+- DoD de una feature: test RED que pasa (GREEN) + refactor + PR mergeada + aprendizaje documentado en `docs/learning/phase-NN-name.md` + `docs/handoff.md` actualizado.
 - Nunca añadir "Co-Authored-By" ni atribución IA.
 
 ## Tabla de punteros

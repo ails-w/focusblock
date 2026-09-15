@@ -62,6 +62,28 @@ Cada feature se desarrolla así:
 
 ---
 
+## Flujo de PR
+
+Cada feature se entrega en **su propia Pull Request** — no se acumulan features en una rama.
+
+```text
+feat/N.N-nombre  ──PR──▶  main
+      │                    │
+      └── CI: Lint · Build · Test ──┘
+```
+
+1. Rama por feature: `feat/4.1-block-engine` (cortada desde `main`).
+2. Commits convencionales durante el desarrollo (TDD: RED → GREEN → REFACTOR).
+3. `gh pr create --base main --head feat/N.N-nombre`.
+4. CI corre `Lint` (`dotnet format --verify-no-changes`), `Build` y `Test`. **Los tres son obligatorios** para mergear.
+5. Merge con `--merge` o `--squash`; **nunca `--rebase`** si la historia divergió.
+
+**Presupuesto de review: ≤400 líneas cambiadas por PR.** Si una feature no entra, se parte en
+sub-unidades cohesivas — no se pide `size:exception`. La única excepción fue la PR de cierre de
+Fase 3 (~4018 líneas), por ser acumulación histórica anterior a esta regla.
+
+---
+
 ## Convención de Nombres de Tests
 
 ```cs
