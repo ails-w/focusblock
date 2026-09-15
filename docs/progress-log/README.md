@@ -10,9 +10,9 @@ Log HISTÓRICO de desarrollo por fase. Backup manual del estado + historial de d
 | Fase | Archivo | Estado |
 |------|---------|--------|
 | 0 | `phase-00-setup.md` | ✅ |
-| 1 | `phase-01-tui.md` | ⏳ |
-| 2 | `phase-02-config.md` | ⏳ |
-| 3 | `phase-03-daemon.md` | ⏳ |
+| 1 | `phase-01-tui.md` | ✅ |
+| 2 | `phase-02-config.md` | ✅ |
+| 3 | `phase-03-daemon.md` | ✅ |
 | 4 | `phase-04-blocker.md` | ⏳ |
 | 5 | `phase-05-antibypass.md` | ⏳ |
 | 6 | `phase-06-metrics.md` | ⏳ |
@@ -20,7 +20,7 @@ Log HISTÓRICO de desarrollo por fase. Backup manual del estado + historial de d
 
 ## Cómo Usar
 
-Al final de cada sesión de desarrollo:
+Al **cerrar cada fase** (y opcionalmente al cerrar una sesión de desarrollo):
 
 1. Actualizar el log de la fase actual con el progreso.
 2. Marcar tareas completadas con `[x]` y fecha.

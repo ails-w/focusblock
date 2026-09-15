@@ -11,7 +11,7 @@ El driver ANSI (por defecto en Linux) de Terminal.Gui renderiza la ventana **vac
 
 Forzar el driver **DOTNET** en el arranque:
 
-```csharp
+```cs
 app.Init(DriverRegistry.Names.DOTNET);
 ```
 

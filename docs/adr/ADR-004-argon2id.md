@@ -20,6 +20,8 @@ El anti-bypass necesita proteger la contraseña de desbloqueo temprano almacenad
 
 - Memory-hard: resistente a ataques con GPU/ASIC.
 - Estándar moderno de hashing de contraseñas.
+- Los parámetros de costo (`MemorySize`, `Iterations`, `DegreeOfParallelism`) son constantes de código y **no se persisten** junto al hash: subirlos invalida los hashes existentes (la verificación recomputa con los parámetros nuevos).
+- Un string en formato PHC (`$argon2id$v=19$m=...,t=...,p=...$<salt>$<hash>`) permitiría que el costo evolucione de forma transparente.
 
 ## Referencias
 

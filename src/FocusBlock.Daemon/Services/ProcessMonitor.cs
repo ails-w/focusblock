@@ -2,23 +2,24 @@ namespace FocusBlock.Daemon.Services;
 
 public class ProcessMonitor
 {
+    private readonly IProcessSource _source;
+
+    public ProcessMonitor(IProcessSource source)
+    {
+        _source = source;
+    }
+
     public IEnumerable<string> GetRunningProcesses()
     {
-        foreach (string entry in Directory.GetDirectories("/proc"))
+        foreach (int pid in _source.GetProcessIds())
         {
-            string pid = Path.GetFileName(entry);
-            if (!int.TryParse(pid, out _))
+            string? status = _source.ReadStatus(pid);
+            if (status is null)
             {
                 continue;
             }
 
-            string statusPath = Path.Combine(entry, "status");
-            if (!File.Exists(statusPath))
-            {
-                continue;
-            }
-
-            string? processName = ExtractProcessName(File.ReadAllText(statusPath));
+            string? processName = ExtractProcessName(status);
             if (!string.IsNullOrEmpty(processName))
             {
                 yield return processName;

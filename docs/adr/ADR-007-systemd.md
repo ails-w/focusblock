@@ -13,13 +13,13 @@ El daemon root debe arrancar con el sistema, reiniciarse ante fallos y correr co
 
 ## Alternativas consideradas
 
-- **Docker only**: útil para desarrollo/testing, no como servicio nativo de Arch.
+- **Contenedor como servicio nativo**: rechazado — el daemon necesita el PID namespace del host y root.
 - **Supervisor/otros**: no son el init nativo.
 
 ## Consecuencias
 
 - Nativo de Arch, auto-reinicio, logs a journald.
-- Docker queda como entorno opcional para tests (ver `ADR-009`).
+- El daemon no corre en contenedor: necesita el PID namespace del host y root (ver `ADR-009`). Docker queda como extra de aprendizaje opcional.
 
 ## Referencias
 

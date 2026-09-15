@@ -15,7 +15,6 @@
 │  ┌─────────────────────────────────────────────────────┐ │
 │  │           focusblock-daemon (root)                   │ │
 │  │  Servicio systemd — monitorea /proc, mata procesos   │ │
-│  │  Contenedor Docker (opcional) — entorno aislado      │ │
 │  │  Posee DB SQLite, archivos config, chattr +i        │ │
 │  └──────────────────────┬──────────────────────────────┘ │
 │                         │                                │
@@ -26,13 +25,13 @@
 └─────────────────────────────────────────────────────────┘
 ```
 
-**¿Por qué esta separación?** La TUI corre como usuario regular (seguro, fácil de desarrollar). El daemon corre como root via systemd (requerido para `/proc` y `chattr +i`). IPC los mantiene desacoplados. Docker aísla el daemon para testing y deployment.
+**¿Por qué esta separación?** La TUI corre como usuario regular (seguro, fácil de desarrollar). El daemon corre como root via systemd (requerido para `/proc` y `chattr +i`). IPC los mantiene desacoplados. El daemon corre **nativamente en el host** porque necesita el PID namespace del host y root (ver `docs/adr/ADR-009-testing-seams.md`).
 
 ---
 
 ## Estructura de Carpetas
 
-> Estructura **OBJETIVO**. Los proyectos `Daemon` y `Contracts` aún no existen como código (ver `docs/handoff.md`).
+> Estructura **objetivo**: mezcla lo implementado (Tui, Contracts, Daemon con `Worker` y `ProcessMonitor`) con lo planificado (`BlockEnforcer`, `IpcServer`, `IpcClient`, `MetricsCollector`, etc.).
 
 ```
 FocusBlock/
@@ -68,30 +67,31 @@ FocusBlock/
 │       └── BlockStatus.cs             # Enum de estado
 │
 ├── tests/
-│   └── FocusBlock.Tests.Unit/
+│   └── FocusBlock.Tests.Unit/         # Layout plano: un archivo por clase bajo test
 │       ├── FocusBlock.Tests.Unit.csproj
-│       ├── BlockRuleTests.cs
-│       └── ProcessMonitorTests.cs
+│       ├── AppConfigTests.cs
+│       ├── AuthServiceTests.cs
+│       ├── ConfigServiceTests.cs
+│       ├── ProcessMonitorTests.cs
+│       ├── WorkerTests.cs
+│       └── ...
 │
 ├── config/
 │   ├── focusblock.json                # Config por defecto
-│   ├── focusblock-daemon.service      # Archivo systemd
-│   └── docker/
-│       ├── Dockerfile.daemon          # Multi-stage build
-│       ├── Dockerfile.dev             # Hot-reload desarrollo
-│       └── docker-compose.yml         # Entorno desarrollo
+│   └── focusblock-daemon.service      # Archivo systemd
 │
 └── docs/
     ├── index.md                       # Mapa de navegación
     ├── vision.md                      # Visión y alcance global
-    ├── plan-fases.md                  # Fases con scope y criterios de salida
+    ├── phase-plan.md                  # Fases con scope y criterios de salida
+    ├── architecture.md                # Este archivo
+    ├── development-plan.md            # Estrategia de testing + deployment
     ├── handoff.md                     # Estado mutable (fase activa, próximo paso)
-    ├── arquitectura.md                # Este archivo
-    ├── plan-desarrollo.md             # Estrategia testing + Docker + deploy
-    ├── aprendizaje/                   # Conceptos aprendidos por fase
-    ├── progreso-log/                  # Log histórico por fase
-    ├── decisiones/                    # ADRs (on-demand)
-    └── diagramas/                     # Diagramas si es necesario
+    ├── learning/                      # Conceptos aprendidos por fase
+    ├── progress-log/                  # Log histórico por fase
+    ├── adr/                           # ADRs (decisiones de arquitectura)
+    ├── extras/                        # Temas opcionales fuera de las fases
+    └── diagrams/                      # Diagramas
 ```
 
 ---
@@ -109,7 +109,6 @@ FocusBlock/
 | `xunit` | Tests | Framework de testing |
 | `Moq` | Tests | Librería de mocks |
 | `FluentAssertions` | Tests | Librería de assertions |
-| `Testcontainers.Containers.Sqlite` | Tests.Integration | SQLite para tests |
 
 ---
 
@@ -122,8 +121,7 @@ TUI (cliente)                          Daemon (servidor)
     │                                      │
     ├─── {"type":"status"} ──────────────▶│
     │◀── {"type":"status_response",       │
-    │      "active_blocks":[...],         │
-    │      "daemon_uptime":3600} ─────────┤
+    │      "detail":"2 active blocks"} ───┤
     │                                      │
     ├─── {"type":"add_block",             │
     │     "app_name":"firefox",           │
@@ -135,22 +133,26 @@ TUI (cliente)                          Daemon (servidor)
     │◀── {"type":"ok"} ──────────────────┤
 ```
 
+> Los campos enriquecidos de estado (`active_blocks`, `daemon_uptime`) llegan con el BlockEngine (Fase 4); hoy `status_response` solo transporta `detail`.
+
 ### Tipos de Mensaje
 
-```csharp
+```cs
 public enum MessageType
 {
-    Status, StatusResponse,
-    AddBlock, RemoveBlock, ListBlocks,
-    ForceStop, BlockStatus,
-    Ok, Error
+    Status,
+    StatusResponse,
+    AddBlock,
+    RemoveBlock,
+    Ok,
+    Error,
 }
 
 public record IpcMessage(
     MessageType Type,
-    string? Payload = null,
-    string? RequestId = null
-);
+    string? AppName = null,
+    string? Schedule = null,
+    string? Detail = null);
 ```
 
 ---
@@ -230,6 +232,7 @@ Resumen de decisiones — el detalle (contexto, alternativas, consecuencias) viv
 | Escaneo: `/proc` directo | `docs/adr/ADR-006-proc-scan.md` |
 | Servicio: systemd | `docs/adr/ADR-007-systemd.md` |
 | Testing: xUnit + Moq + FluentAssertions | `docs/adr/ADR-008-testing-stack.md` |
-| Docker: multi-stage | `docs/adr/ADR-009-docker-multistage.md` |
+| Testing: puntos de inyección (seams) | `docs/adr/ADR-009-testing-seams.md` |
 | Target: .NET 10 | `docs/adr/ADR-010-dotnet-10-target.md` |
 | Driver: DOTNET (workaround) | `docs/adr/ADR-011-dotnet-driver.md` |
+| Estrategias de bloqueo: Schedule-only | `docs/adr/ADR-012-blocking-strategies.md` |

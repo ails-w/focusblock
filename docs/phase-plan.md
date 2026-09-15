@@ -9,7 +9,8 @@
 - TDD estricto: RED → GREEN → REFACTOR (test ANTES de implementar).
 - Código en inglés, docs en español.
 - Commits convencionales (feat:, fix:, test:, docs:, refactor:).
-- Al cerrar una fase: actualizar log + conceptos + plan-fases + handoff + commit.
+- Cada feature termina en **commit + PR** (rama por feature → CI → merge; objetivo ≤400 líneas).
+- Al cerrar una fase: actualizar `progress-log/`, `learning/`, `phase-plan.md` (estado y features) y `handoff.md` + commit.
 
 ## Resumen de fases
 
@@ -18,7 +19,7 @@
 | 0 | Setup | ✅ | `learning/phase-00-setup.md` | `progress-log/phase-00-setup.md` |
 | 1 | Esqueleto TUI | ✅ | `learning/phase-01-tui.md` | `progress-log/phase-01-tui.md` |
 | 2 | Configuración | ✅ | `learning/phase-02-config.md` | `progress-log/phase-02-config.md` |
-| 3 | Daemon y monitor | ⏳ | `learning/phase-03-daemon.md` | `progress-log/phase-03-daemon.md` |
+| 3 | Daemon y monitor | ✅ | `learning/phase-03-daemon.md` | `progress-log/phase-03-daemon.md` |
 | 4 | Núcleo bloqueador | ⏳ | `learning/phase-04-blocker.md` | `progress-log/phase-04-blocker.md` |
 | 5 | Anti-bypass | ⏳ | `learning/phase-05-antibypass.md` | `progress-log/phase-05-antibypass.md` |
 | 6 | Métricas | ⏳ | `learning/phase-06-metrics.md` | `progress-log/phase-06-metrics.md` |
@@ -132,6 +133,8 @@
 - [x] Async I/O en archivos → `docs/learning/phase-02-config.md`
 - [x] Hashing de contraseñas (Argon2id, salt) → `docs/learning/phase-02-config.md`
 
+**Puntos de inyección:** filesystem de `ConfigService` (ruta inyectada).
+
 ### Criterio de salida
 
 - [x] `ConfigService` carga defaults si falta archivo y persiste cambios.
@@ -167,9 +170,11 @@
 
 ---
 
-## Fase 3 — Daemon y Monitor de Procesos ⏳
+## Fase 3 — Daemon y Monitor de Procesos ✅
 
 **Objetivo:** daemon root que monitorea `/proc`, mata procesos y sirve IPC por Unix socket.
+
+**Cerrada:** 2026-09-15. Features 3.1–3.4 implementadas y testeadas (32 tests). El **cableado end-to-end** (`Program.cs`, mapeo nombre→PID, handler IPC real) se difiere a Fase 4 (BlockEngine). Detalle → `docs/progress-log/phase-03-daemon.md`.
 
 ### Scope
 
@@ -177,7 +182,6 @@
 - `ProcessMonitor` escaneando `/proc`.
 - `BlockEnforcer` con SIGTERM → SIGKILL (P/Invoke).
 - `IpcServer` en Unix socket.
-- Integración Docker (multi-stage + compose).
 
 ### Fuera de scope
 
@@ -185,53 +189,51 @@
 
 ### Conceptos de aprendizaje
 
-- [ ] `BackgroundService` y ciclo de vida del worker → `docs/learning/phase-03-daemon.md`
-- [ ] Escaneo de `/proc` en Linux → `docs/learning/phase-03-daemon.md`
-- [ ] P/Invoke y señales (SIGTERM/SIGKILL) → `docs/learning/phase-03-daemon.md`
-- [ ] Unix domain sockets (servidor) → `docs/learning/phase-03-daemon.md`
-- [ ] Docker multi-stage → `docs/learning/phase-03-daemon.md`
+- [x] `BackgroundService` y ciclo de vida del worker → `docs/learning/phase-03-daemon.md`
+- [x] Escaneo de `/proc` en Linux → `docs/learning/phase-03-daemon.md`
+- [x] P/Invoke y señales (SIGTERM/SIGKILL) → `docs/learning/phase-03-daemon.md`
+- [x] Unix domain sockets (servidor) → `docs/learning/phase-03-daemon.md`
+
+**Puntos de inyección:** `IProcessSource` (`/proc`), `ISignalSender` (`kill`) y ruta del socket.
 
 ### Criterio de salida
 
-- [ ] Daemon arranca como servicio, escanea procesos y mata por nombre.
-- [ ] Responde a requests IPC (status, add_block, remove_block).
-- [ ] Corre en Docker con acceso a `/proc`.
-- [ ] Tests unitarios + integración verdes.
+- [x] Componentes del daemon implementados y testeados (Worker, ProcessMonitor, BlockEnforcer, IpcServer).
+- [~] Daemon arranca como servicio, escanea procesos y mata por nombre → **cableado end-to-end diferido a Fase 4**.
+- [~] Responde a requests IPC (status, add_block, remove_block) → **handler real diferido a Fase 4**.
+- [x] Tests unitarios + integración verdes (32).
 
 ### Features (TDD)
 
 #### Feature 3.1: Worker BackgroundService
-- [ ] Escribir test: `Worker_StartsAndRunsUntilCancelled` (RED)
-- [ ] Crear proyecto `FocusBlock.Daemon/` (GREEN)
-- [ ] Agregar `Worker.cs` como `BackgroundService`
-- [ ] Agregar a solución
+- [x] Escribir test: `Worker_StartsAndRunsUntilCancelled` (RED)
+- [x] Crear proyecto `FocusBlock.Daemon/` (GREEN)
+- [x] Agregar `Worker.cs` como `BackgroundService`
+- [x] Agregar a solución
 
 #### Feature 3.2: Monitor de Procesos
-- [ ] Escribir test: `ProcessMonitor_GetRunningProcesses_ReturnsList` (RED)
-- [ ] Crear `Services/ProcessMonitor.cs` (GREEN)
-- [ ] Implementar escaneo de `/proc`
-- [ ] Escribir test: `ProcessMonitor_ExtractProcessName_ParsesStatus` (RED)
-- [ ] Implementar helper `ExtractProcessName()`
+- [x] Escribir test: `ProcessMonitor_GetRunningProcesses_ReturnsList` (RED)
+- [x] Crear `Services/ProcessMonitor.cs` (GREEN)
+- [x] Implementar escaneo de `/proc`
+- [x] Escribir test: `ProcessMonitor_ExtractProcessName_ParsesStatus` (RED)
+- [x] Implementar helper `ExtractProcessName()`
 
 #### Feature 3.3: Ejecutor de Bloqueos
-- [ ] Escribir test: `BlockEnforcer_KillProcess_SendsSigterm` (RED)
-- [ ] Crear `Services/BlockEnforcer.cs` (GREEN)
-- [ ] Implementar P/Invoke `kill()` syscall
-- [ ] Escribir test: `BlockEnforcer_EscalatesToSigkill_WhenSigtermFails` (RED)
-- [ ] Implementar escalación SIGTERM → SIGKILL
+- [x] Escribir test: `BlockEnforcer_KillProcessAsync_SendsSigterm` (RED)
+- [x] Crear `Services/BlockEnforcer.cs` (GREEN)
+- [x] Implementar P/Invoke `kill()` syscall
+- [x] Escribir test: `BlockEnforcer_KillProcessAsync_EscalatesToSigkill_WhenSigtermFails` (RED)
+- [x] Implementar escalación SIGTERM → SIGKILL
 
 #### Feature 3.4: Servidor IPC
-- [ ] Escribir test: `IpcServer_HandlesStatusRequest` (RED)
-- [ ] Crear `Services/IpcServer.cs` (GREEN)
-- [ ] Implementar escuchador Unix socket
-- [ ] Escribir test: `IpcServer_HandlesAddBlockRequest` (RED)
-- [ ] Implementar enrutamiento de mensajes
-
-#### Feature 3.5: Integración Docker
-- [ ] Crear `config/docker/Dockerfile.daemon` (GREEN)
-- [ ] Crear `config/docker/docker-compose.yml` (GREEN)
-- [ ] Probar daemon en Docker: `docker-compose up daemon`
-- [ ] Verificar acceso a `/proc` en contenedor
+- [x] Escribir test: `IpcServer_HandlesStatusRequest` (RED)
+- [x] Crear `Services/IpcServer.cs` (GREEN)
+- [x] Implementar escuchador Unix socket
+- [x] Escribir test: `IpcServer_HandlesAddBlockRequest` (RED)
+- [x] Implementar enrutamiento de mensajes
+- [x] Escribir test: `IpcServer_ReturnsError_WhenRequestIsMalformed` (RED)
+- [x] Escribir test: `IpcServer_HandlesMultipleRequests_OnSameConnection` (RED)
+- [x] Escribir test: `IpcServer_DeletesSocketFile_AfterStop` (RED)
 
 ---
 
@@ -255,6 +257,8 @@
 - [ ] Evaluación de reglas de dominio → `docs/learning/phase-04-blocker.md`
 - [ ] Thread-safety y colecciones concurrentes → `docs/learning/phase-04-blocker.md`
 - [ ] Patrón producer/consumer con `Channel<T>` → `docs/learning/phase-04-blocker.md`
+
+**Puntos de inyección:** `TimeProvider` (reloj de `BlockEngine` y `CooldownManager`).
 
 ### Criterio de salida
 
@@ -311,6 +315,8 @@
 - [ ] `chattr +i` y `ioctl` en Linux → `docs/learning/phase-05-antibypass.md`
 - [ ] P/Invoke avanzado (structs, syscalls) → `docs/learning/phase-05-antibypass.md`
 
+**Puntos de inyección:** `IFileAttributes` (`chattr +i`).
+
 ### Criterio de salida
 
 - [ ] Config inmodificable durante bloqueo activo (`chattr +i` verificado).
@@ -359,6 +365,8 @@
 - [ ] UPSERT y queries agregadas → `docs/learning/phase-06-metrics.md`
 - [ ] Charts ASCII con Spectre.Console → `docs/learning/phase-06-metrics.md`
 
+**Puntos de inyección:** conexión SQLite (`connection string` / path) de `MetricsCollector`.
+
 ### Criterio de salida
 
 - [ ] Eventos de bloqueo grabados en SQLite.
@@ -385,7 +393,7 @@
 
 #### Feature 6.4: Test de Integración
 - [ ] Escribir test integración: `MetricsCollector_WithRealSQLite_PersistsAndQueries` (RED)
-- [ ] Probar con TestContainer o DB temporal (GREEN)
+- [ ] Probar con un archivo SQLite temporal (GREEN)
 
 ---
 
@@ -398,7 +406,7 @@
 - Manejo de errores (daemon caído, JSON corrupto).
 - Casos borde (procesos desaparecidos, cooldowns circulares).
 - Suite completa con cobertura.
-- Documentación final y Docker completo.
+- Documentación final.
 
 ### Fuera de scope
 
@@ -409,11 +417,13 @@
 - [ ] Manejo de errores y degradación elegante → `docs/learning/phase-07-polish.md`
 - [ ] Cobertura y mutation testing → `docs/learning/phase-07-polish.md`
 
+**Puntos de inyección:** `IpcClient` (ruta + socket).
+
 ### Criterio de salida
 
 - [ ] Suite unitaria e integración 100% verde.
 - [ ] Cobertura > 80% unit, > 60% integración.
-- [ ] README, docs y Docker finalizados.
+- [ ] README y docs finalizados.
 
 ### Features (TDD)
 
@@ -439,8 +449,3 @@
 - [ ] Actualizar `docs/development-plan.md`
 - [ ] Actualizar `docs/learning/` para todas las fases
 - [ ] Finalizar `README.md`
-
-#### Feature 7.5: Docker Final
-- [ ] Probar `docker-compose up` completo
-- [ ] Verificar que daemon inicia y responde
-- [ ] Probar que TUI conecta con daemon Docker

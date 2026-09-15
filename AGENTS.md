@@ -28,7 +28,7 @@ FocusBlock es una app TUI en C#/.NET 10 para bloquear aplicaciones en Arch Linux
 
 ## Mapa del repo
 
-Estructura completa (actual y objetivo) → `docs/architecture.md`. El proyecto `Daemon` es **estructura objetivo**, no código existente.
+Estructura completa (actual y objetivo) → `docs/architecture.md`. Los proyectos `Tui`, `Contracts` y `Daemon` ya existen como código; el árbol de `architecture.md` mezcla lo implementado con lo planificado.
 
 ## Convenciones
 
@@ -36,7 +36,7 @@ Estructura completa (actual y objetivo) → `docs/architecture.md`. El proyecto 
 - **PascalCase** clases, `_camelCase` campos privados, 4 espacios, 100 chars — *Reason:* estándar .NET.
 - **Conventional commits**: `feat:`, `fix:`, `test:`, `docs:`, `refactor:` — *Reason:* historial legible y verificable.
 - **Sin "Co-Authored-By" ni atribución IA** — *Reason:* regla global del usuario.
-- **Docs: bloques de código con cabecera `cs`** (no `csharp`) — *Reason:* convención del usuario para render/Obsidian.
+- **Docs: bloques de código con cabecera `cs`** (nunca el alias largo de C#) — *Reason:* convención del usuario para render/Obsidian.
 
 ## TDD ESTRICTO (regla dura)
 
@@ -58,7 +58,7 @@ Este es un proyecto de **APRENDIZAJE**. El objetivo principal es que el estudian
 
 - Framework: xUnit + Moq + FluentAssertions.
 - Ubicación: `tests/FocusBlock.Tests.Unit/` (carpetas `Services/`, `Models/`).
-- Pirámide: unit → integración (TestContainers) → funcional (Docker) — ver `docs/development-plan.md`.
+- Pirámide: unit (fakes por seams) → integración en host → funcional en host — ver `docs/development-plan.md`.
 
 ## Límites / Do-nots
 
@@ -77,8 +77,9 @@ Este es un proyecto de **APRENDIZAJE**. El objetivo principal es que el estudian
 ## Git + Definition of Done
 
 - Commits: conventional commits en inglés.
-- **Commit al final de cada Feature**: test RED → GREEN → refactor → commit convencional del feature.
-- DoD de una feature: test RED que pasa (GREEN) + refactor + aprendizaje documentado en `docs/learning/phase-NN-name.md` + `docs/handoff.md` actualizado.
+- **Commit + PR al final de cada Feature**: test RED → GREEN → refactor → commit convencional → PR.
+- **Una PR por feature**: rama `feat/N.N-nombre` → PR a `main` → CI (`Lint`/`Build`/`Test`) → merge. Objetivo **≤400 líneas** por PR; si no entra, se parte por feature (no `size:exception`).
+- DoD de una feature: test RED que pasa (GREEN) + refactor + PR mergeada + aprendizaje documentado en `docs/learning/phase-NN-name.md` + `docs/handoff.md` actualizado.
 - Nunca añadir "Co-Authored-By" ni atribución IA.
 
 ## Tabla de punteros
