@@ -10,8 +10,8 @@ Log HISTÓRICO de desarrollo por fase. Backup manual del estado + historial de d
 | Fase | Archivo | Estado |
 |------|---------|--------|
 | 0 | `phase-00-setup.md` | ✅ |
-| 1 | `phase-01-tui.md` | ⏳ |
-| 2 | `phase-02-config.md` | ⏳ |
+| 1 | `phase-01-tui.md` | ✅ |
+| 2 | `phase-02-config.md` | ✅ |
 | 3 | `phase-03-daemon.md` | ⏳ |
 | 4 | `phase-04-blocker.md` | ⏳ |
 | 5 | `phase-05-antibypass.md` | ⏳ |
