@@ -64,23 +64,26 @@ Cada feature se desarrolla así:
 
 ## Flujo de PR
 
-Cada feature se entrega en **su propia Pull Request** — no se acumulan features en una rama.
+Se trabaja **siempre en `dev`**; `main` es la rama estable. Esas son las únicas dos ramas.
 
 ```text
-feat/N.N-nombre  ──PR──▶  main
-      │                    │
-      └── CI: Lint · Build · Test ──┘
+dev  ──PR──▶  main
+ │              │
+ └─ CI: Lint · Build · Test ─┘
 ```
 
-1. Rama por feature: `feat/4.1-block-engine` (cortada desde `main`).
-2. Commits convencionales durante el desarrollo (TDD: RED → GREEN → REFACTOR).
-3. `gh pr create --base main --head feat/N.N-nombre`.
-4. CI corre `Lint` (`dotnet format --verify-no-changes`), `Build` y `Test`. **Los tres son obligatorios** para mergear.
-5. Merge con `--merge` o `--squash`; **nunca `--rebase`** si la historia divergió.
+1. Todo el desarrollo ocurre en `dev` (commits TDD: RED → GREEN → REFACTOR).
+2. Al cerrar cada feature: `gh pr create --base main --head dev`.
+3. CI corre `Lint` (`dotnet format --verify-no-changes`), `Build` y `Test`. **Los tres son obligatorios** para mergear.
+4. Merge con `--merge` o `--squash`; **nunca `--rebase`** si la historia divergió.
+5. Tras el merge, sincronizar `dev` con `main`: `git merge --ff-only origin/main`.
+
+**Una PR por feature**: la PR `dev → main` se abre al cerrar cada feature, para que el review y el CI
+ocurran feature por feature en lugar de todo junto al final de la fase.
 
 **Presupuesto de review: ≤400 líneas cambiadas por PR.** Si una feature no entra, se parte en
 sub-unidades cohesivas — no se pide `size:exception`. La única excepción fue la PR de cierre de
-Fase 3 (~4018 líneas), por ser acumulación histórica anterior a esta regla.
+Fase 3 (~4018 líneas), por acumulación histórica anterior a esta regla.
 
 ---
 
@@ -141,7 +144,7 @@ Las dependencias del sistema operativo (filesystem, `/proc`, señales, `chattr`,
 | `ProcessMonitor` | `/proc` | `IProcessSource` (enumerar + leer) | fuente fake en memoria | `/proc` real |
 | `BlockEnforcer` | syscall `kill()` | `ISignalSender` | sender fake que registra señales | proceso dummy (`sleep`) |
 | `IpcServer` | Unix socket | ruta del socket inyectada | path temporal | cliente/servidor real |
-| `BlockEngine` | reloj | `TimeProvider` | `FakeTimeProvider` | — |
+| `BlockEngine` | reloj | ninguno: `now` entra por parámetro (función pura) | — | — |
 | `CooldownManager` | reloj | `TimeProvider` | `FakeTimeProvider` | — |
 | `FileProtector` | `chattr +i` (ioctl) | `IFileAttributes` | fake que registra flags | FS real con root |
 | `MetricsCollector` | SQLite | connection string / path | SQLite temporal | archivo real |

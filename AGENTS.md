@@ -78,7 +78,7 @@ Este es un proyecto de **APRENDIZAJE**. El objetivo principal es que el estudian
 
 - Commits: conventional commits en inglés.
 - **Commit + PR al final de cada Feature**: test RED → GREEN → refactor → commit convencional → PR.
-- **Una PR por feature**: rama `feat/N.N-nombre` → PR a `main` → CI (`Lint`/`Build`/`Test`) → merge. Objetivo **≤400 líneas** por PR; si no entra, se parte por feature (no `size:exception`).
+- **Una PR por feature**: se desarrolla en `dev` y se abre la PR `dev → main` al cerrar cada feature. CI (`Lint`/`Build`/`Test`) obligatorio. Objetivo **≤400 líneas** por PR.
 - DoD de una feature: test RED que pasa (GREEN) + refactor + PR mergeada + aprendizaje documentado en `docs/learning/phase-NN-name.md` + `docs/handoff.md` actualizado.
 - Nunca añadir "Co-Authored-By" ni atribución IA.
 
