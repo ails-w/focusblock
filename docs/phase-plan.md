@@ -9,7 +9,7 @@
 - TDD estricto: RED → GREEN → REFACTOR (test ANTES de implementar).
 - Código en inglés, docs en español.
 - Commits convencionales (feat:, fix:, test:, docs:, refactor:).
-- Cada feature termina en **commit + PR** (rama por feature → CI → merge; objetivo ≤400 líneas).
+- Cada feature termina en **commit + PR** (`dev → main`; objetivo ≤400 líneas).
 - Al cerrar una fase: actualizar `progress-log/`, `learning/`, `phase-plan.md` (estado y features) y `handoff.md` + commit.
 
 ## Resumen de fases
@@ -258,7 +258,7 @@
 - [ ] Thread-safety y colecciones concurrentes → `docs/learning/phase-04-blocker.md`
 - [ ] Patrón producer/consumer con `Channel<T>` → `docs/learning/phase-04-blocker.md`
 
-**Puntos de inyección:** `TimeProvider` (reloj de `BlockEngine` y `CooldownManager`).
+**Puntos de inyección:** `BlockEngine` es una función pura (`now` entra por parámetro, sin seam); `TimeProvider` es el reloj del `CooldownManager`.
 
 ### Criterio de salida
 
@@ -269,11 +269,11 @@
 ### Features (TDD)
 
 #### Feature 4.1: Motor de Reglas
-- [ ] Escribir test: `BlockEngine_Evaluate_ReturnsBlock_WhenInSchedule` (RED)
-- [ ] Escribir test: `BlockEngine_Evaluate_ReturnsNoBlock_WhenOutsideSchedule` (RED)
-- [ ] Escribir test: `BlockEngine_Evaluate_ReturnsNoBlock_WhenRuleDisabled` (RED)
-- [ ] Crear `Services/BlockEngine.cs` (GREEN)
-- [ ] Implementar lógica de evaluación de reglas
+- [x] Escribir test: `BlockEngine_Evaluate_ReturnsBlock_WhenInSchedule` (RED)
+- [x] Escribir test: `BlockEngine_Evaluate_ReturnsNoBlock_WhenOutsideSchedule` (RED)
+- [x] Escribir test: `BlockEngine_Evaluate_ReturnsNoBlock_WhenRuleDisabled` (RED)
+- [x] Crear `Services/BlockEngine.cs` (GREEN)
+- [x] Implementar lógica de evaluación de reglas (incluye ventanas que cruzan medianoche)
 
 #### Feature 4.2: Gestor de Cooldown
 - [ ] Escribir test: `CooldownManager_StartCooldown_SetsExpiry` (RED)
