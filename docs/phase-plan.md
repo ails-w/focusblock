@@ -9,7 +9,7 @@
 - TDD estricto: RED → GREEN → REFACTOR (test ANTES de implementar).
 - Código en inglés, docs en español.
 - Commits convencionales (feat:, fix:, test:, docs:, refactor:).
-- Cada feature termina en **commit + PR** (`dev → main`; objetivo ≤400 líneas).
+- Cada feature termina en **commit** en `dev`. Las PRs (`dev → main`) se abren al cerrar la fase: una de código y otra de docs.
 - Al cerrar una fase: actualizar `progress-log/`, `learning/`, `phase-plan.md` (estado y features) y `handoff.md` + commit.
 
 ## Resumen de fases

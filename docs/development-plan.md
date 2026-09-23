@@ -72,18 +72,18 @@ dev  ──PR──▶  main
  └─ CI: Lint · Build · Test ─┘
 ```
 
-1. Todo el desarrollo ocurre en `dev` (commits TDD: RED → GREEN → REFACTOR).
-2. Al cerrar cada feature: `gh pr create --base main --head dev`.
-3. CI corre `Lint` (`dotnet format --verify-no-changes`), `Build` y `Test`. **Los tres son obligatorios** para mergear.
+1. Todo el desarrollo ocurre en `dev`, con **un commit por feature** (TDD: RED → GREEN → REFACTOR).
+   **No se abre PR por feature.**
+2. Al **cerrar la fase** se abren **dos PRs** `dev → main`, en este orden:
+   - **PR de código**: todos los features de la fase.
+   - **PR de docs**: `learning/`, `progress-log/`, `phase-plan.md` y `handoff.md` actualizados.
+3. CI corre `Lint` (`dotnet format --verify-no-changes`), `Build` y `Test`. **Los tres son obligatorios**.
 4. Merge con `--merge` o `--squash`; **nunca `--rebase`** si la historia divergió.
-5. Tras el merge, sincronizar `dev` con `main`: `git merge --ff-only origin/main`.
+5. Tras cada merge, sincronizar `dev` con `main`: `git merge --ff-only origin/main`.
 
-**Una PR por feature**: la PR `dev → main` se abre al cerrar cada feature, para que el review y el CI
-ocurran feature por feature en lugar de todo junto al final de la fase.
-
-**Presupuesto de review: ≤400 líneas cambiadas por PR.** Si una feature no entra, se parte en
-sub-unidades cohesivas — no se pide `size:exception`. La única excepción fue la PR de cierre de
-Fase 3 (~4018 líneas), por acumulación histórica anterior a esta regla.
+**Presupuesto de review**: la guía de ≤400 líneas aplica a cambios chicos. Las PRs de cierre de fase la
+superan por diseño (agrupan varios features) para priorizar el avance; si una se vuelve inmanejable, se
+parte por feature.
 
 ---
 
