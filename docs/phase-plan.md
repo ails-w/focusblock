@@ -276,11 +276,11 @@
 - [x] Implementar lógica de evaluación de reglas (incluye ventanas que cruzan medianoche)
 
 #### Feature 4.2: Gestor de Cooldown
-- [ ] Escribir test: `CooldownManager_StartCooldown_SetsExpiry` (RED)
-- [ ] Escribir test: `CooldownManager_IsOnCooldown_ReturnsTrue_WhenActive` (RED)
-- [ ] Escribir test: `CooldownManager_IsOnCooldown_ReturnsFalse_WhenExpired` (RED)
-- [ ] Crear `Services/CooldownManager.cs` (GREEN)
-- [ ] Implementar tracking thread-safe de cooldowns
+- [x] Escribir test: `CooldownManager_StartCooldown_SetsExpiry` (RED)
+- [x] Escribir test: `CooldownManager_IsOnCooldown_ReturnsTrue_WhenActive` (RED)
+- [x] Escribir test: `CooldownManager_IsOnCooldown_ReturnsFalse_WhenExpired` (RED)
+- [x] Crear `Services/CooldownManager.cs` (GREEN)
+- [x] Implementar tracking thread-safe de cooldowns
 
 #### Feature 4.3: Sistema de Challenges
 - [ ] Escribir test: `ChallengeSystem_GenerateChallenge_ReturnsRandomText` (RED)

@@ -145,7 +145,7 @@ Las dependencias del sistema operativo (filesystem, `/proc`, señales, `chattr`,
 | `BlockEnforcer` | syscall `kill()` | `ISignalSender` | sender fake que registra señales | proceso dummy (`sleep`) |
 | `IpcServer` | Unix socket | ruta del socket inyectada | path temporal | cliente/servidor real |
 | `BlockEngine` | reloj | ninguno: `now` entra por parámetro (función pura) | — | — |
-| `CooldownManager` | reloj | `TimeProvider` | `FakeTimeProvider` | — |
+| `CooldownManager` | reloj | ninguno: `now` entra por parámetro (el `Worker` es dueño del reloj) | — | — |
 | `FileProtector` | `chattr +i` (ioctl) | `IFileAttributes` | fake que registra flags | FS real con root |
 | `MetricsCollector` | SQLite | connection string / path | SQLite temporal | archivo real |
 | `IpcClient` | socket | ruta + socket | servidor fake | daemon real |
