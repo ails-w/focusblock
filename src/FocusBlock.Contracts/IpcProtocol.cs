@@ -18,6 +18,12 @@ public enum MessageType
     /// <summary>Request: remove an existing block rule.</summary>
     RemoveBlock,
 
+    /// <summary>
+    /// Request: stop blocking an app early. The daemon verifies the attached
+    /// <see cref="IpcMessage.Password"/> before granting the early stop.
+    /// </summary>
+    ForceStop,
+
     /// <summary>Response: the request succeeded.</summary>
     Ok,
 
@@ -30,11 +36,13 @@ public enum MessageType
 /// <c>snake_case</c> naming, e.g. <c>{"type":"add_block","app_name":"firefox"}</c>.
 /// </summary>
 /// <param name="Type">The message kind; drives how the receiver routes it.</param>
-/// <param name="AppName">Application name for <see cref="MessageType.AddBlock"/>/<see cref="MessageType.RemoveBlock"/>.</param>
+/// <param name="AppName">Application name for <see cref="MessageType.AddBlock"/>/<see cref="MessageType.RemoveBlock"/>/<see cref="MessageType.ForceStop"/>.</param>
 /// <param name="Schedule">Block window (e.g. <c>09:00-17:00</c>) for <see cref="MessageType.AddBlock"/>.</param>
 /// <param name="Detail">Human-readable detail, typically set on <see cref="MessageType.Error"/>.</param>
+/// <param name="Password">Early-stop secret for <see cref="MessageType.ForceStop"/>; verified by the daemon and never echoed back.</param>
 public record IpcMessage(
     MessageType Type,
     string? AppName = null,
     string? Schedule = null,
-    string? Detail = null);
+    string? Detail = null,
+    string? Password = null);
