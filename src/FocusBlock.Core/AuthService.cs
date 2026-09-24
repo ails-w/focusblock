@@ -3,9 +3,9 @@ using System.Text;
 
 using Konscious.Security.Cryptography;
 
-namespace FocusBlock.Tui.Services;
+namespace FocusBlock.Core;
 
-public class AuthService
+public class AuthService : IPasswordVerifier
 {
     private const int SaltSize = 16;
     private const int HashSize = 32;

@@ -13,5 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FocusBlock.Contracts\FocusBlock.Contracts.csproj" />
+    <ProjectReference Include="..\FocusBlock.Core\FocusBlock.Core.csproj" />
   </ItemGroup>
 </Project>
