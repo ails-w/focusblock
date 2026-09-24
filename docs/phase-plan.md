@@ -9,7 +9,7 @@
 - TDD estricto: RED → GREEN → REFACTOR (test ANTES de implementar).
 - Código en inglés, docs en español.
 - Commits convencionales (feat:, fix:, test:, docs:, refactor:).
-- Cada feature termina en **commit + PR** (`dev → main`; objetivo ≤400 líneas).
+- Cada feature termina en **commit** en `dev`. Las PRs (`dev → main`) se abren al cerrar la fase: una de código y otra de docs.
 - Al cerrar una fase: actualizar `progress-log/`, `learning/`, `phase-plan.md` (estado y features) y `handoff.md` + commit.
 
 ## Resumen de fases
@@ -276,17 +276,19 @@
 - [x] Implementar lógica de evaluación de reglas (incluye ventanas que cruzan medianoche)
 
 #### Feature 4.2: Gestor de Cooldown
-- [ ] Escribir test: `CooldownManager_StartCooldown_SetsExpiry` (RED)
-- [ ] Escribir test: `CooldownManager_IsOnCooldown_ReturnsTrue_WhenActive` (RED)
-- [ ] Escribir test: `CooldownManager_IsOnCooldown_ReturnsFalse_WhenExpired` (RED)
-- [ ] Crear `Services/CooldownManager.cs` (GREEN)
-- [ ] Implementar tracking thread-safe de cooldowns
+- [x] Escribir test: `CooldownManager_StartCooldown_SetsExpiry` (RED)
+- [x] Escribir test: `CooldownManager_IsOnCooldown_ReturnsTrue_WhenActive` (RED)
+- [x] Escribir test: `CooldownManager_IsOnCooldown_ReturnsFalse_WhenExpired` (RED)
+- [x] Crear `Services/CooldownManager.cs` (GREEN)
+- [x] Implementar tracking thread-safe de cooldowns
 
 #### Feature 4.3: Sistema de Challenges
-- [ ] Escribir test: `ChallengeSystem_GenerateChallenge_ReturnsRandomText` (RED)
-- [ ] Crear `Services/ChallengeSystem.cs` (GREEN)
-- [ ] Escribir test: `ChallengeDialog_ShowsChallenge_AndValidatesInput` (RED)
-- [ ] Crear `ChallengeDialog` TUI (GREEN)
+- [x] Escribir test: `ChallengeSystem_GenerateChallenge_ReturnsRandomText` (RED)
+- [x] Crear `Services/ChallengeSystem.cs` (GREEN)
+- [x] Escribir test: `ChallengeDialog_ShowsChallenge_AndValidatesInput` (RED)
+- [x] Escribir test: `ChallengeDialog_ValidateInput_ReturnsFalse_WhenInputWrong` (RED)
+- [x] Escribir test: `ChallengeDialog_HasOkAndCancelButtons` (RED)
+- [x] Crear `ChallengeDialog` TUI (GREEN)
 
 #### Feature 4.4: Flujo de Early Stop
 - [ ] Escribir test: `BlockEngine_TryEarlyStop_ReturnsTrue_WhenPasswordCorrect` (RED)
