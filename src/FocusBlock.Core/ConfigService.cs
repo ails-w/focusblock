@@ -1,6 +1,6 @@
 using FocusBlock.Contracts;
 
-namespace FocusBlock.Tui.Services;
+namespace FocusBlock.Core;
 
 public class ConfigService
 {

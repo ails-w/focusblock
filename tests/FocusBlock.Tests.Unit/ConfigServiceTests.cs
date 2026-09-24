@@ -1,7 +1,7 @@
 using FluentAssertions;
 
 using FocusBlock.Contracts;
-using FocusBlock.Tui.Services;
+using FocusBlock.Core;
 
 namespace FocusBlock.Tests.Unit;
 
