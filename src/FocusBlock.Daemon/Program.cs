@@ -17,14 +17,19 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IProcessSource, ProcProcessSource>();
 builder.Services.AddSingleton<ISignalSender, LibcSignalSender>();
 builder.Services.AddSingleton<IPasswordVerifier, AuthService>();
+builder.Services.AddSingleton<ProcessMonitor>();
+builder.Services.AddSingleton<BlockEnforcer>();
 builder.Services.AddSingleton<BlockEngine>();
 builder.Services.AddSingleton<CooldownManager>();
+builder.Services.AddSingleton<BlockCoordinator>();
 builder.Services.AddSingleton<IIpcRequestHandler, DaemonRequestHandler>();
 builder.Services.AddSingleton(sp =>
     new IpcServer(socketPath, sp.GetRequiredService<IIpcRequestHandler>()));
 
 builder.Services.AddHostedService<IpcServerHostedService>();
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService(sp => new Worker(
+    TimeSpan.FromSeconds(5),
+    ct => sp.GetRequiredService<BlockCoordinator>().RunOnceAsync(ct)));
 
 var host = builder.Build();
 host.Run();

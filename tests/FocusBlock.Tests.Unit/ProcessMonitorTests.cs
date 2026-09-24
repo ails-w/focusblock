@@ -67,6 +67,33 @@ public class ProcessMonitorTests
     }
 
     [Fact]
+    public void ProcessMonitor_GetProcesses_ReturnsPidAndName()
+    {
+        var source = new FakeProcessSource()
+            .WithProcess(101, "Name:\tfirefox\nState:\tS (sleeping)\n")
+            .WithProcess(202, "Name:\tbash\nState:\tS (sleeping)\n");
+        var monitor = new ProcessMonitor(source);
+
+        List<ProcessInfo> processes = monitor.GetProcesses().ToList();
+
+        processes.Should().Equal(new ProcessInfo(101, "firefox"), new ProcessInfo(202, "bash"));
+    }
+
+    [Fact]
+    public void ProcessMonitor_GetProcesses_SkipsProcesses_WithoutStatus()
+    {
+        var source = new FakeProcessSource()
+            .WithProcess(101, "Name:\tfirefox\n")
+            .WithMissingStatus(202)
+            .WithProcess(303, "Name:\tbash\n");
+        var monitor = new ProcessMonitor(source);
+
+        List<ProcessInfo> processes = monitor.GetProcesses().ToList();
+
+        processes.Should().Equal(new ProcessInfo(101, "firefox"), new ProcessInfo(303, "bash"));
+    }
+
+    [Fact]
     [Trait("Category", "Integration")]
     public void ProcProcessSource_GetProcessIds_ContainsCurrentProcess()
     {
