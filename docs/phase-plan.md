@@ -20,7 +20,7 @@
 | 1 | Esqueleto TUI | ✅ | `learning/phase-01-tui.md` | `progress-log/phase-01-tui.md` |
 | 2 | Configuración | ✅ | `learning/phase-02-config.md` | `progress-log/phase-02-config.md` |
 | 3 | Daemon y monitor | ✅ | `learning/phase-03-daemon.md` | `progress-log/phase-03-daemon.md` |
-| 4 | Núcleo bloqueador | ⏳ | `learning/phase-04-blocker.md` | `progress-log/phase-04-blocker.md` |
+| 4 | Núcleo bloqueador | ✅ | `learning/phase-04-blocker.md` | `progress-log/phase-04-blocker.md` |
 | 5 | Anti-bypass | ⏳ | `learning/phase-05-antibypass.md` | `progress-log/phase-05-antibypass.md` |
 | 6 | Métricas | ⏳ | `learning/phase-06-metrics.md` | `progress-log/phase-06-metrics.md` |
 | 7 | Pulido y testing | ⏳ | `learning/phase-07-polish.md` | `progress-log/phase-07-polish.md` |
@@ -237,9 +237,11 @@
 
 ---
 
-## Fase 4 — Núcleo del Bloqueador ⏳
+## Fase 4 — Núcleo del Bloqueador ✅
 
 **Objetivo:** motor de reglas, cooldown thread-safe y sistema de challenges.
+
+**Completada:** features 4.1–4.4 implementadas y testeadas (91 tests). Cierre documental (`learning/phase-04-blocker.md` + `progress-log/phase-04-blocker.md`) y PRs `dev → main` pendientes.
 
 ### Scope
 
@@ -256,15 +258,15 @@
 
 - [ ] Evaluación de reglas de dominio → `docs/learning/phase-04-blocker.md`
 - [ ] Thread-safety y colecciones concurrentes → `docs/learning/phase-04-blocker.md`
-- [ ] Patrón producer/consumer con `Channel<T>` → `docs/learning/phase-04-blocker.md`
+- [ ] Patrón producer/consumer con `Channel<T>` → **no aplicó**: el bucle del `Worker` es secuencial (un tick a la vez), no hizo falta un canal.
 
 **Puntos de inyección:** `BlockEngine` es una función pura (`now` entra por parámetro, sin seam); `TimeProvider` es el reloj del `CooldownManager`.
 
 ### Criterio de salida
 
-- [ ] `BlockEngine` decide bloquear según horario/estado con tests verdes.
-- [ ] Cooldown funciona de forma thread-safe y expira correctamente.
-- [ ] Early stop requiere challenge + contraseña correcta.
+- [x] `BlockEngine` decide bloquear según horario/estado con tests verdes.
+- [x] Cooldown funciona de forma thread-safe y expira correctamente.
+- [x] Early stop requiere challenge + contraseña correcta.
 
 ### Features (TDD)
 
@@ -291,10 +293,10 @@
 - [x] Crear `ChallengeDialog` TUI (GREEN)
 
 #### Feature 4.4: Flujo de Early Stop
-- [ ] Escribir test: `BlockEngine_TryEarlyStop_ReturnsTrue_WhenPasswordCorrect` (RED)
-- [ ] Escribir test: `BlockEngine_TryEarlyStop_ReturnsFalse_WhenPasswordWrong` (RED)
-- [ ] Implementar `TryEarlyStop()` en BlockEngine (GREEN)
-- [ ] Conectar cooldown + challenge + verificación de contraseña
+- [x] Escribir test: `BlockEngine_TryEarlyStop_ReturnsTrue_WhenPasswordCorrect` (RED)
+- [x] Escribir test: `BlockEngine_TryEarlyStop_ReturnsFalse_WhenPasswordWrong` (RED)
+- [x] Implementar `TryEarlyStop()` en BlockEngine (GREEN)
+- [x] Conectar cooldown + challenge + verificación de contraseña
 
 ---
 

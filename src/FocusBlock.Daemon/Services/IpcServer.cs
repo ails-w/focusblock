@@ -1,7 +1,6 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 using FocusBlock.Contracts;
 
@@ -18,12 +17,6 @@ namespace FocusBlock.Daemon.Services;
 /// </remarks>
 public sealed class IpcServer : IAsyncDisposable
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
-    };
-
     private readonly string _socketPath;
     private readonly IIpcRequestHandler _handler;
 
@@ -155,7 +148,7 @@ public sealed class IpcServer : IAsyncDisposable
                 }
 
                 IpcMessage response = await ProcessLineAsync(line, ct).ConfigureAwait(false);
-                await writer.WriteLineAsync(JsonSerializer.Serialize(response, JsonOptions))
+                await writer.WriteLineAsync(JsonSerializer.Serialize(response, IpcJson.Options))
                     .ConfigureAwait(false);
             }
         }
@@ -187,7 +180,7 @@ public sealed class IpcServer : IAsyncDisposable
         IpcMessage? request;
         try
         {
-            request = JsonSerializer.Deserialize<IpcMessage>(line, JsonOptions);
+            request = JsonSerializer.Deserialize<IpcMessage>(line, IpcJson.Options);
         }
         catch (JsonException)
         {

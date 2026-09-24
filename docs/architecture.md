@@ -131,6 +131,12 @@ TUI (cliente)                          Daemon (servidor)
     ├─── {"type":"remove_block",          │
     │     "app_name":"firefox"} ─────────▶│
     │◀── {"type":"ok"} ──────────────────┤
+    │                                      │
+    ├─── {"type":"force_stop",            │
+    │     "app_name":"firefox",           │
+    │     "password":"..."} ─────────────▶│
+    │◀── {"type":"ok"} ──────────────────┤
+    │   (o {"type":"error","detail":"..."})│
 ```
 
 > Los campos enriquecidos de estado (`active_blocks`, `daemon_uptime`) llegan con el BlockEngine (Fase 4); hoy `status_response` solo transporta `detail`.
@@ -144,6 +150,7 @@ public enum MessageType
     StatusResponse,
     AddBlock,
     RemoveBlock,
+    ForceStop,
     Ok,
     Error,
 }
@@ -152,7 +159,8 @@ public record IpcMessage(
     MessageType Type,
     string? AppName = null,
     string? Schedule = null,
-    string? Detail = null);
+    string? Detail = null,
+    string? Password = null);
 ```
 
 ---
