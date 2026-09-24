@@ -241,7 +241,7 @@
 
 **Objetivo:** motor de reglas, cooldown thread-safe y sistema de challenges.
 
-**Completada:** features 4.1–4.4 implementadas y testeadas (91 tests). Cierre documental (`learning/phase-04-blocker.md` + `progress-log/phase-04-blocker.md`) y PRs `dev → main` pendientes.
+**Completada:** features 4.1–4.4 implementadas y testeadas (91 tests). Cierre documental completo (`learning/phase-04-blocker.md` + `progress-log/phase-04-blocker.md` + diagramas); PRs `dev → main` pendientes.
 
 ### Scope
 
@@ -256,9 +256,9 @@
 
 ### Conceptos de aprendizaje
 
-- [ ] Evaluación de reglas de dominio → `docs/learning/phase-04-blocker.md`
-- [ ] Thread-safety y colecciones concurrentes → `docs/learning/phase-04-blocker.md`
-- [ ] Patrón producer/consumer con `Channel<T>` → **no aplicó**: el bucle del `Worker` es secuencial (un tick a la vez), no hizo falta un canal.
+- [x] Evaluación de reglas de dominio → `docs/learning/phase-04-blocker.md`
+- [x] Thread-safety y colecciones concurrentes → `docs/learning/phase-04-blocker.md`
+- [x] Patrón producer/consumer con `Channel<T>` → **no aplicó**: el bucle del `Worker` es secuencial (un tick a la vez), no hizo falta un canal. Documentado como nota honesta en `docs/learning/phase-04-blocker.md`.
 
 **Puntos de inyección:** `BlockEngine` es una función pura (`now` entra por parámetro, sin seam); `TimeProvider` es el reloj del `CooldownManager`.
 
