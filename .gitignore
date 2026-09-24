@@ -489,3 +489,4 @@ cobertura.xml
 
 # Local tooling cache
 .atl/
+.codegraph/
