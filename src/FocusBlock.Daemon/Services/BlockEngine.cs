@@ -1,4 +1,5 @@
 using FocusBlock.Contracts;
+using FocusBlock.Core;
 
 namespace FocusBlock.Daemon.Services;
 
@@ -9,6 +10,18 @@ namespace FocusBlock.Daemon.Services;
 /// </summary>
 public class BlockEngine
 {
+    private readonly IPasswordVerifier _verifier;
+
+    public BlockEngine(IPasswordVerifier verifier) => _verifier = verifier;
+
+    /// <summary>
+    /// Verifies the password that authorizes stopping a block early.
+    /// This is the password gate only: the caller owns the surrounding flow and starts the
+    /// cooldown once this returns <c>true</c>.
+    /// </summary>
+    public bool TryEarlyStop(string password, SecurityConfig security) =>
+        _verifier.VerifyPassword(password, security.PasswordHash, security.PasswordSalt);
+
     /// <summary>
     /// Evaluates a single rule against <paramref name="now"/>.
     /// The active window is the half-open interval <c>[StartTime, EndTime)</c>: a time equal

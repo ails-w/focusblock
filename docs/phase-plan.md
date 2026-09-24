@@ -291,9 +291,9 @@
 - [x] Crear `ChallengeDialog` TUI (GREEN)
 
 #### Feature 4.4: Flujo de Early Stop
-- [ ] Escribir test: `BlockEngine_TryEarlyStop_ReturnsTrue_WhenPasswordCorrect` (RED)
-- [ ] Escribir test: `BlockEngine_TryEarlyStop_ReturnsFalse_WhenPasswordWrong` (RED)
-- [ ] Implementar `TryEarlyStop()` en BlockEngine (GREEN)
+- [x] Escribir test: `BlockEngine_TryEarlyStop_ReturnsTrue_WhenPasswordCorrect` (RED)
+- [x] Escribir test: `BlockEngine_TryEarlyStop_ReturnsFalse_WhenPasswordWrong` (RED)
+- [x] Implementar `TryEarlyStop()` en BlockEngine (GREEN)
 - [ ] Conectar cooldown + challenge + verificación de contraseña
 
 ---
