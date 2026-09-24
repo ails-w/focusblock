@@ -13,7 +13,7 @@ public class MainWindow : Window
     public AddBlockView AddBlockView { get; }
     public View Content { get; private set; }
 
-    public MainWindow()
+    public MainWindow(Func<Task>? onEarlyStop = null)
     {
         Title = "FocusBlock";
         StatusView = new StatusView();
@@ -24,6 +24,7 @@ public class MainWindow : Window
             new MenuBarItem("_Block", [
                 new MenuItem { Title = "_New Block", Action = () => ShowView(AddBlockView) },
                 new MenuItem { Title = "_List", Action = () => ShowView(BlockListView) },
+                new MenuItem { Title = "_Early Stop", Action = () => _ = onEarlyStop?.Invoke() },
             ]),
             new MenuBarItem("_View", [
                 new MenuItem { Title = "_Status", Action = () => ShowView(StatusView) },
