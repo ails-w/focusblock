@@ -283,10 +283,12 @@
 - [x] Implementar tracking thread-safe de cooldowns
 
 #### Feature 4.3: Sistema de Challenges
-- [ ] Escribir test: `ChallengeSystem_GenerateChallenge_ReturnsRandomText` (RED)
-- [ ] Crear `Services/ChallengeSystem.cs` (GREEN)
-- [ ] Escribir test: `ChallengeDialog_ShowsChallenge_AndValidatesInput` (RED)
-- [ ] Crear `ChallengeDialog` TUI (GREEN)
+- [x] Escribir test: `ChallengeSystem_GenerateChallenge_ReturnsRandomText` (RED)
+- [x] Crear `Services/ChallengeSystem.cs` (GREEN)
+- [x] Escribir test: `ChallengeDialog_ShowsChallenge_AndValidatesInput` (RED)
+- [x] Escribir test: `ChallengeDialog_ValidateInput_ReturnsFalse_WhenInputWrong` (RED)
+- [x] Escribir test: `ChallengeDialog_HasOkAndCancelButtons` (RED)
+- [x] Crear `ChallengeDialog` TUI (GREEN)
 
 #### Feature 4.4: Flujo de Early Stop
 - [ ] Escribir test: `BlockEngine_TryEarlyStop_ReturnsTrue_WhenPasswordCorrect` (RED)
