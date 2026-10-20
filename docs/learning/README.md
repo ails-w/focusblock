@@ -2,7 +2,7 @@
 
 > Cómo estudiar, no qué leer. El objetivo es retener, no cubrir.
 
-Cada fase tiene **un archivo** con 4-6 conceptos. No se lee de corrido: se estudia por
+Cada fase tiene **un archivo** con 4-5 conceptos. No se lee de corrido: se estudia por
 conceptos, cerrando el archivo antes de responder las preguntas.
 
 ## Sesión de 10 minutos
@@ -33,6 +33,8 @@ siguiente, responde 3 preguntas de una fase anterior.
 
 ## Reglas
 
+- **Se escribe al cerrar la fase**, con lo aprendido. Al inicio solo se lee: no se crean
+  apuntes vacíos ni se especula.
 - **Se corta sin piedad.** Lo eliminado queda en git. Cubrir no es aprender.
 - **Una idea por concepto.** Si necesitas dos, son dos conceptos.
 - **La jerga va después de la idea.** Primero la analogía, después el término técnico.

@@ -4,7 +4,7 @@
 > Conceptos → `docs/learning/`. Decisiones → `docs/adr/`.
 > Aprendizajes y decisiones persistentes → Engram (memoria).
 
-**Última actualización**: 2026-09-24
+**Última actualización**: 2026-10-20
 
 ## Estado actual
 
@@ -13,6 +13,7 @@
 | **Fase activa** | Fase 5 — Seguridad Anti-Bypass |
 | **Última completada** | Fase 4 — Núcleo del Bloqueador ✅ |
 | **Progreso** | Fases 0–4 ✅ · Fase 5 sin iniciar (91 tests verdes) |
+| **Documentación** | Reestructurada: learning compacto, `project.md` único, sin `progress-log`/`diagrams`/`extras` |
 
 ## Próximo paso
 
