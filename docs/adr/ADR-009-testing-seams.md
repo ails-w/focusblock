@@ -38,11 +38,9 @@ contenedores.
 - Los tests de integración corren **en el host** y están etiquetados por categoría; se saltan cuando faltan
   privilegios.
 - El daemon se despliega **nativamente** vía systemd (ADR-007).
-- Docker multi-stage queda como **extra de aprendizaje opcional**, no como estrategia de testing ni de
-  runtime (`docs/extras/docker-multistage.md`).
+- Docker no se usa como estrategia de testing ni como runtime.
 
 ## Referencias
 
 - `docs/development-plan.md` (Puntos de inyección)
-- `docs/extras/docker-multistage.md`
 - `docs/adr/ADR-007-systemd.md`

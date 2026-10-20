@@ -24,4 +24,4 @@ Target **`net10.0`** para los cuatro proyectos (`FocusBlock.Tui`, `FocusBlock.Da
 
 ## Referencias
 
-- `docs/progress-log/phase-00-setup.md` (decisión 1)
+- `docs/learning/phase-00-setup.md` (formato `.slnx`)

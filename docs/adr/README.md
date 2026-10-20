@@ -18,6 +18,7 @@ Los ADR (*Architecture Decision Records*) registran las decisiones técnicas imp
 | `ADR-010-dotnet-10-target.md` | Target .NET 10 |
 | `ADR-011-dotnet-driver.md` | Driver DOTNET de Terminal.Gui |
 | `ADR-012-blocking-strategies.md` | Estrategias de bloqueo: Schedule-only por ahora |
+| `ADR-013-core-dependency-inversion.md` | `FocusBlock.Core` y inversión de dependencias |
 
 ## Cuándo escribir un ADR
 

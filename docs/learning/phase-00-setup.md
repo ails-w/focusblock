@@ -1,269 +1,114 @@
-# Fase 00 — Setup: Fundamentos del Proyecto
+# Fase 00 — Setup: solución, TUI y driver
 
-> Qué se aprende: por qué una TUI .NET se organiza como una solución con proyectos y cómo
-> se conecta la librería Terminal.Gui con la terminal real.
-> Log de la fase (tareas, decisiones, problemas) → `docs/progress-log/phase-00-setup.md`
-> Fase siguiente → `docs/learning/phase-01-tui.md`
+> Qué construye: la solución .NET, el primer Hello World en terminal y la infraestructura
+> de tests.
+> Después: [Fase 01](phase-01-tui.md) · [Glosario](glossary.md)
 
-## Glosario de la fase
+## Dónde estamos
 
-| Término | Qué significa (en una línea) |
-|---|---|
-| TUI | Interfaz de usuario dibujada con texto dentro de una terminal. |
-| GUI | Interfaz gráfica con ventanas y pixeles; necesita un servidor gráfico. |
-| Terminal | Programa que mantiene una grilla de celdas y dibuja texto según los bytes que recibe. |
-| Secuencia de escape | Bytes que empiezan con `ESC` y dan órdenes a la terminal. |
-| Driver de rendering | Capa que traduce las vistas a secuencias de escape de una terminal. |
-| Alternate screen buffer | Segunda pantalla de la terminal, para apps de pantalla completa. |
-| .NET SDK | Paquete de herramientas `dotnet` para compilar, testear y ejecutar proyectos .NET. |
-| Solución | Archivo que agrupa varios proyectos para operarlos juntos (`FocusBlock.slnx`). |
-| Proyecto | Unidad de compilación con su `.csproj`; produce un `.dll` o `.exe`. |
-| API | Superficie pública con la que tu código habla con una librería. |
-| API estática | Se invoca sobre la clase (`Clase.Metodo()`); su estado es global. |
-| API por instancia | Se invoca sobre un objeto (`objeto.Metodo()`); estado por instancia. |
-| Namespace | Espacio de nombres que agrupa tipos y evita colisiones. |
-| Case-sensitive | Distingue mayúsculas de minúsculas: `Y` y `y` son identificadores distintos. |
-
-## Mapa de conceptos
+No existe código. El objetivo es una ventana TUI que se dibuje y un `dotnet test` que
+corra, con la estructura mínima para empezar.
 
 ```text
-.NET SDK
-  └── Solución (.slnx) ──▶ Proyectos (Tui, Contracts, Daemon, Tests)
-
-Terminal.Gui v2 (API por instancia)
-  ├── se escribe en C# (case-sensitive)
-  └── dibuja a través de un Driver de rendering
-        └── en Linux: driver ANSI (roto) → driver DOTNET (workaround)
+Terminal (grilla de celdas)
+   ▲  secuencias de escape
+Driver DOTNET
+   ▲
+Terminal.Gui (IApplication)
+   ▲
+FocusBlockApp ── MainWindow ── Label
+   ▲
+dotnet run ── FocusBlock.slnx ── 4 proyectos
 ```
+
+## Qué construye esta fase
+
+Una solución `.slnx`, un proyecto TUI con Terminal.Gui v2, un proyecto de tests con
+xUnit + Moq + FluentAssertions y un Hello World verificado en Linux. Al cerrar,
+`dotnet build` y `dotnet test` funcionan desde la raíz.
+
+## El recorrido de una acción
+
+1. Ejecutas `dotnet run --project src/FocusBlock.Tui`.
+2. El SDK lee `FocusBlock.slnx` y compila los proyectos en orden de dependencias.
+3. `Program.cs` crea una aplicación con `Application.Create()`.
+4. `FocusBlockApp` recibe esa aplicación y arma `MainWindow`.
+5. `Run()` llama a `Init(DOTNET)` y entra en el bucle de eventos.
+6. El driver traduce la ventana a secuencias de escape y la terminal la dibuja.
+
+## Los conceptos
+
+| # | Concepto | Idea en una línea | Código |
+|---|---|---|---|
+| 1 | API por instancia | La app es un objeto que se inyecta | `App.cs` |
+| 2 | Solución `.slnx` | Un archivo lista los proyectos | `FocusBlock.slnx` |
+| 3 | Driver DOTNET | El driver ANSI de Linux falla | `App.cs` |
+| 4 | Case-sensitivity | `Y` y `y` son identificadores distintos | `StatusView.cs` |
 
 ---
 
-## Terminal.Gui v2 — API por instancia
+## 1. API por instancia
 
-### En una frase
+**Idea.** En Terminal.Gui v2 la aplicación es un objeto (`IApplication`) que creas e
+inyectas. El estado vive en ese objeto, no en la clase. Sin esto, el test abriría una
+terminal real.
 
-Terminal.Gui te deja construir interfaces de texto, y en v2 la aplicación es un
-**objeto** que vos creás y controlás en lugar de una caja global compartida.
+**Analogía.** La API estática es el altavoz del edificio: todos hablan por el mismo canal.
+La API por instancia es tu propia radio: cada uno tiene la suya y la apaga cuando quiere.
 
-### Fundamentos previos
-
-**¿Qué es una TUI y qué la diferencia de una GUI?**
-Una GUI (Graphical User Interface) dibuja ventanas, botones y pixeles a través de un
-servidor gráfico (X11, Wayland, Windows). Una TUI (Terminal User Interface) se dibuja
-*dentro de una terminal*, usando una grilla de caracteres: por ejemplo 80 columnas por
-24 filas. Cada celda tiene un carácter, un color de frente y un color de fondo. Una TUI
-no necesita servidor gráfico, funciona por SSH y es rápida; a cambio, está limitada a
-caracteres y pierde precisión de layout frente a los pixeles.
-
-**¿Qué es una terminal?**
-Históricamente era un dispositivo físico (un teletipo). Hoy es un *emulador*: kitty,
-alacritty, GNOME Terminal. La terminal mantiene una grilla de celdas y entiende un flujo
-de bytes. Los bytes imprimibles se escriben en la celda actual; otros bytes son órdenes.
-Tu programa no "pinta pixeles": escribe bytes y confía en que la terminal los interprete.
-
-**¿Qué es una secuencia de escape?**
-Es un conjunto de bytes que empieza con el carácter `ESC` (código 27, escrito `\x1b` o
-`\e`) y sigue con parámetros. Ejemplos reales: `\x1b[2J` limpia la pantalla, `\x1b[H`
-mueve el cursor al inicio, `\x1b[31m` pone el texto en rojo. Cuando una app TUI "dibuja",
-en realidad emite cientos de estas secuencias. Nunca las escribís a mano: las emite el
-driver.
-
-**¿Qué es un driver de rendering?**
-Es la capa que traduce el estado deseado de la UI (qué texto va en qué celda) a las
-secuencias de escape correctas para la terminal concreta. Distintas terminales soportan
-distintas capacidades (true color, protocolo de teclado Kitty). Terminal.Gui trae varios
-drivers: `ANSI`, `DOTNET`, `WINDOWS`.
-
-**¿Qué es el alternate screen buffer?**
-Las terminales modernas mantienen dos pantallas lógicas. La *normal* conserva tu
-historial de comandos y scrollback; la *alterna* es una pantalla limpia y separada. Las
-apps de pantalla completa (`vim`, `less`, una TUI) cambian a la alterna al arrancar
-(secuencias `\x1b[?1049h` y `\x1b[?1049l`). Por eso, al cerrar la app, recuperás el
-prompt tal como estaba. Terminal.Gui hace este cambio por vos cuando corrés una ventana.
-
-**¿Qué es una API y qué diferencia hay entre estática y por instancia?**
-Una API es la superficie pública de una librería. Hay dos estilos de diseño:
-
-- **API estática**: se llama sobre la clase, como `Application.Init()`. Todo el estado
-  vive en un único lugar global (campos estáticos). Ventaja: escribir poco. Problemas:
-  dos usos en el mismo proceso se pisan, los tests comparten estado y dependen del orden,
-  y el ciclo de vida queda oculto.
-- **API por instancia**: se llama sobre un objeto, como `app.Init(...)`. Cada instancia
-  lleva su propio estado. Ventaja: se puede crear, inyectar, reemplazar por un doble de
-  test y descartar. Es la base de la testabilidad de la Fase 1.
-
-Terminal.Gui v1 usaba API estática; v2 usa API por instancia (`IApplication`).
-
-**¿Qué es un namespace y un sub-namespace?**
-Un namespace agrupa tipos bajo un nombre con puntos. `Terminal.Gui` es el namespace raíz
-de la librería; `Terminal.Gui.App`, `Terminal.Gui.Views` y `Terminal.Gui.ViewBase` son
-sub-namespaces. En v2 los tipos se movieron del raíz a los sub-namespaces: por eso un
-`using Terminal.Gui;` de v1 ya no encuentra `Label`. Confirmado en el repo: `App.cs:3-4`
-importa `Terminal.Gui.App` y `Terminal.Gui.Drivers`; `MainWindow.cs:1-3` importa
-`Terminal.Gui.Input`, `.ViewBase` y `.Views`.
-
-### Qué es
-
-Terminal.Gui es una librería TUI para .NET. En v2 el punto de entrada es
-`Application.Create()`, que devuelve un objeto `IApplication`. Ese objeto tiene el
-método `Init(driver)`, el método `Run(view)` y el método `RequestStop()`.
-
-### Qué problema resuelve
-
-Antes (API estática) había **un solo estado global** para toda la aplicación. No se
-podían correr dos aplicaciones en el mismo proceso, ni aislar los tests, ni saber con
-claridad cuándo arranca y termina el ciclo de vida. La API por instancia encapsula ese
-estado en un objeto: vos decidís cuándo crearlo, cuándo iniciarlo y cuándo terminarlo.
-
-### Cómo funciona paso a paso
-
-1. `Application.Create()` construye un objeto `IApplication` con su propio estado.
-2. `app.Init(driver)` prepara la terminal: detecta capacidades, entra al alternate
-   screen buffer y deja listo el driver de rendering.
-3. `app.Run(window)` entra en el bucle de eventos: lee teclado/ratón, recalcula layout,
-   dibuja y repite hasta que algo pide detenerse.
-4. `RequestStop()` (o una tecla configurada, como `Esc`) corta el bucle.
-5. Al salir, `Init` se revierte: se restaura la pantalla normal y el cursor.
-
-### Qué se rompería sin esto en FocusBlock
-
-`FocusBlockApp` recibe `IApplication` por constructor (`App.cs:13`). Sin API por
-instancia no habría un objeto que inyectar: el test
-`FocusBlockAppTests.FocusBlockApp_CreatesMainWindow` no podría pasar
-`Mock.Of<IApplication>()` y tendría que abrir una terminal real. La suite de la Fase 1
-dejaría de ser unitaria y aislada.
-
-### Para qué sirve en este proyecto
-
-`Program.cs` crea la app real y la pasa a `FocusBlockApp`. `App.cs` la guarda en
-`_app`, arma `MainWindow` y expone `Run()`. Toda la orquestación depende de la interfaz
-`IApplication`, no de una implementación concreta: eso es lo que permite cambiarla por un
-doble en tests.
-
-### Cómo se usa (código real)
+**Cómo funciona.** 1) `Application.Create()` construye el objeto con su estado. 2)
+`Init(driver)` prepara la terminal y la pantalla alterna. 3) `Run(window)` ejecuta el bucle
+de eventos. 4) `RequestStop()` o `Esc` lo corta y revierte `Init`.
 
 ```cs
-// src/FocusBlock.Tui/Program.cs — Composition Root
+// src/FocusBlock.Tui/Program.cs
 FocusBlockApp app = new(Application.Create());
 app.Run();
 
-// src/FocusBlock.Tui/App.cs:13-22
+// src/FocusBlock.Tui/App.cs
 public FocusBlockApp(IApplication app)
 {
     _app = app;
-    MainWindow = new MainWindow();
+    MainWindow = new MainWindow(OnEarlyStopAsync);   // callback de la fase 04
 }
 
 public void Run()
 {
     _app.Init(DriverRegistry.Names.DOTNET);
-    _app.Run(MainWindow);   // bloquea hasta que la ventana se cierra
+    _app.Run(MainWindow);
 }
 ```
 
-### Error común
+**Trampa.** Copiar código de v1: `Application.Init()` estático o `Label("texto")` produce
+`CS0246` o `CS0117`. Verifica el API contra la versión instalada.
 
-Escribir código de v1 contra v2: `Application.Init()` estático y `Label("texto")` por
-constructor. En v2.4.17 eso produce `CS0246` (tipo no encontrado, porque cambió de
-namespace) o `CS0117` (el miembro no existe con esa firma). Detección: el compilador
-marca la línea; la causa no es tu lógica sino el cambio de API entre versiones mayores.
-Regla práctica: antes de copiar un ejemplo, verificarlo contra la versión instalada.
+<details><summary>Verifica</summary>
 
-### Para profundizar
+1. ¿Dónde vive el estado de la UI en v2?
+2. ¿Por qué el test puede pasar `Mock.Of<IApplication>()` sin abrir terminal?
+3. ¿Qué hace `Run()` y qué lo detiene?
 
-- [`Terminal.Gui` en GitHub](https://github.com/gui-cs/Terminal.Gui)
-- [`docs/adr/ADR-001-terminal-gui.md`](../adr/ADR-001-terminal-gui.md)
-- Concepto siguiente: **Formato `.slnx`** y **Driver DOTNET** en este mismo archivo.
-- `docs/progress-log/phase-00-setup.md` — decisión 3 (API por instancia).
+</details>
 
 ---
 
-## Formato `.slnx` en .NET 10
+## 2. Solución `.slnx`
 
-### En una frase
+**Idea.** Un archivo XML que lista los proyectos del repositorio para compilarlos y
+testearlos con un solo comando.
 
-Una solución `.slnx` es un archivo XML legible que lista los proyectos del repo, para
-que un solo comando los compile o testee a todos.
+**Analogía.** El proyecto es el ladrillo; la solución es la lista de materiales. Puedes
+fabricar ladrillos sueltos, pero la lista te deja construir la casa de una vez.
 
-### Fundamentos previos
-
-**¿Qué es el .NET SDK?**
-El SDK (Software Development Kit) es el conjunto de herramientas que se instala con
-`dotnet`: el compilador de C#, el sistema de build (MSBuild), las plantillas
-(`dotnet new`) y los comandos `dotnet build`, `dotnet test`, `dotnet run`. El SDK es
-*distinto* del runtime: el runtime ejecuta programas ya compilados; el SDK los compila.
-En este entorno hay un único SDK: .NET 10.0.111.
-
-**¿Qué es un proyecto?**
-Un proyecto es la unidad mínima de compilación. Está descrito por un archivo `.csproj`
-(XML) que declara el target framework, los paquetes NuGet y las referencias a otros
-proyectos. Al compilar, produce un assembly: una librería (`.dll`) o un ejecutable
-(`.exe`). FocusBlock tiene cuatro:
-
-- `src/FocusBlock.Tui/FocusBlock.Tui.csproj` — ejecutable de la TUI.
-- `src/FocusBlock.Contracts/FocusBlock.Contracts.csproj` — librería compartida.
-- `src/FocusBlock.Daemon/FocusBlock.Daemon.csproj` — worker del daemon (estructura objetivo).
-- `tests/FocusBlock.Tests.Unit/FocusBlock.Tests.Unit.csproj` — proyecto de tests.
-
-**¿Qué es una solución?**
-Una solución es un *agrupador lógico*: un archivo que lista proyectos para que las
-herramientas los traten como un conjunto. No aporta código ni referencias; aporta
-orquestación. Sin solución igual podés compilar cada `.csproj` por separado, pero perdés
-el comando único y la vista de conjunto.
-
-**Solución vs proyecto, en una analogía:** el proyecto es un ladrillo; la solución es la
-lista de materiales. Podés fabricar ladrillos sueltos, pero la lista te deja construir
-toda la casa de una vez.
-
-### Qué es
-
-`dotnet new sln` en .NET 10 genera `FocusBlock.slnx`, un archivo en formato XML. El
-formato clásico `.sln` era texto con un formato propio más verboso; `.slnx` es el nuevo
-formato por defecto del SDK 10.
-
-### Qué problema resuelve
-
-Antes había que enumerar a mano cada proyecto en cada comando, o mantener el archivo
-`.sln` con sintaxis propietaria difícil de diffear. `.slnx` da un único punto de entrada
-legible y versionable para compilar, testear y agregar proyectos.
-
-### Cómo funciona paso a paso
-
-1. `dotnet new sln -n FocusBlock` crea el archivo con la estructura `<Solution>`.
-2. `dotnet sln add src/FocusBlock.Tui` agrega el `<Project Path="..."/>` dentro de la
-   carpeta correspondiente.
-3. Al correr `dotnet build` en la raíz, el SDK busca el `.slnx` y compila todos los
-   proyectos listados en orden de dependencias.
-4. Las carpetas `<Folder Name="/src/">` y `/tests/` son solo agrupación visual: no
-   afectan el build.
-
-### Qué se rompería sin esto en FocusBlock
-
-Sin `FocusBlock.slnx` no habría un `dotnet build` ni un `dotnet test` a nivel raíz: cada
-comando tendría que apuntar a un `.csproj` puntual. El proyecto de tests (que referencia
-a `Tui`, `Contracts` y `Daemon`) seguiría funcionando, pero el flujo de trabajo del repo
-sería manual y más propenso a olvidar un proyecto.
-
-### Para qué sirve en este proyecto
-
-`FocusBlock.slnx` es la raíz del monorepo: agrupa los tres proyectos de `src/` y el de
-`tests/`. Es lo que hace que `dotnet build` y `dotnet test` desde la raíz cubran todo.
-
-### Cómo se usa (código real)
-
-```bash
-dotnet new sln -n FocusBlock        # genera FocusBlock.slnx (formato XML)
-dotnet sln add src/FocusBlock.Tui   # agrega un proyecto a la solución
-dotnet build                        # compila todos los proyectos de la solución
-dotnet test                         # corre todos los tests de la solución
-```
-
-El archivo real (`FocusBlock.slnx`) lista cuatro proyectos:
+**Cómo funciona.** 1) `dotnet new sln -n FocusBlock` crea el archivo. 2) `dotnet sln add`
+agrega cada proyecto. 3) `dotnet build` compila todo lo listado. 4) Las carpetas `<Folder>`
+son agrupación visual.
 
 ```xml
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/FocusBlock.Contracts/FocusBlock.Contracts.csproj" />
+    <Project Path="src/FocusBlock.Core/FocusBlock.Core.csproj" />  <!-- fase 04 -->
     <Project Path="src/FocusBlock.Daemon/FocusBlock.Daemon.csproj" />
     <Project Path="src/FocusBlock.Tui/FocusBlock.Tui.csproj" />
   </Folder>
@@ -273,209 +118,126 @@ El archivo real (`FocusBlock.slnx`) lista cuatro proyectos:
 </Solution>
 ```
 
-### Error común
+**Trampa.** Buscar un `FocusBlock.sln` clásico: en .NET 10 el SDK genera `.slnx` por
+defecto. Si una herramienta no lo reconoce, pásale los `.csproj`.
 
-Buscar un `FocusBlock.sln` clásico y concluir que "no hay solución". En .NET 10 el SDK
-genera `.slnx` por defecto. Detección: `ls *.slnx` en la raíz. Si una herramienta no
-reconoce `.slnx`, hay que indicarle el formato o pasarle los `.csproj` directamente.
+<details><summary>Verifica</summary>
 
-### Para profundizar
+1. ¿Qué diferencia hay entre proyecto y solución?
+2. ¿Qué pasa si agregas un proyecto y olvidas incluirlo en el `.slnx`?
+3. ¿Para qué sirven las carpetas `<Folder>` si no afectan el build?
 
-- [`dotnet sln` (Microsoft Learn)](https://learn.microsoft.com/dotnet/core/tools/dotnet-sln)
-- [Formato `.slnx`](https://learn.microsoft.com/dotnet/core/tools/dotnet-sln#slnx)
-- `docs/architecture.md` — mapa del repo.
-- `docs/adr/ADR-010-dotnet-10-target.md`
+</details>
 
 ---
 
-## Driver DOTNET de Terminal.Gui en Linux
+## 3. Driver DOTNET
 
-### En una frase
+**Idea.** Terminal.Gui dibuja a través de un driver. En Linux, el driver ANSI de la versión
+2.4.17 tiene un bug y el proyecto fuerza el driver `DOTNET`.
 
-Terminal.Gui necesita un driver para dibujar; en Linux el driver ANSI tiene un bug y el
-proyecto fuerza el driver `DOTNET` como workaround.
+**Analogía.** Es el intérprete entre el director y los músicos. Si un intérprete se
+equivoca, cambias de intérprete, no la partitura: tu UI puede estar bien.
 
-### Fundamentos previos
-
-Este concepto reutiliza **terminal**, **secuencia de escape** y **driver de rendering**
-del primer concepto. Repaso exprés: la terminal entiende bytes; el driver traduce la UI a
-esos bytes; cada driver apunta a un conjunto de capacidades distinto.
-
-**¿Qué significa "workaround"?**
-Es una solución temporal que evita un problema ajeno a tu código. No arregla la causa (el
-bug del driver), pero permite seguir trabajando. Todo workaround debe tener seguimiento:
-si el bug se corrige upstream, tu código queda con una decisión innecesaria.
-
-### Qué es
-
-Un driver de rendering concreto para Linux/Unix. El driver ANSI emite secuencias ANSI
-estándar; el driver DOTNET es otra implementación de la misma interfaz. En la versión
-2.4.17, el driver ANSI por defecto en Linux tiene bugs upstream
-([#4848](https://github.com/gui-cs/Terminal.Gui/issues/4848) y
-[#4374](https://github.com/gui-cs/Terminal.Gui/issues/4374)): la pantalla queda garbled o
-vacía, sin subviews.
-
-### Qué problema resuelve
-
-Evita un bug de la librería que no podemos corregir desde FocusBlock. Forzando el driver
-`DOTNET` antes de `Run`, la ventana y sus vistas se renderizan correctamente en
-Linux/Arch (incluido Zellij, el multiplexor que usa el usuario).
-
-### Cómo funciona paso a paso
-
-1. Al llamar `app.Init(DriverRegistry.Names.DOTNET)`, la app resuelve la *fábrica* del
-   driver `DOTNET` en vez de la del driver por defecto.
-2. Ese driver implementa la lectura de la terminal y la emisión de secuencias de escape
-   sin pasar por el camino con bug del ANSI.
-3. `app.Run(window)` ya opera con ese driver: al dibujar, el driver elegido produce la
-   salida.
-4. El resto del código no cambia: el driver es un detalle de infraestructura.
-
-### Qué se rompería sin esto en FocusBlock
-
-El Hello World de la Fase 0 mostraba una ventana vacía aunque el código fuera idéntico al
-ejemplo oficial. Sin el workaround, ni `MainWindow` ni sus subviews (`StatusView`,
-`BlockListView`, `AddBlockView`) se verían. Y como el bug es de rendering, los tests
-unitarios seguirían en verde: no detectarían el problema, porque no abren una terminal.
-
-### Para qué sirve en este proyecto
-
-Es una línea en `FocusBlockApp.Run()` (`App.cs:21`) que condiciona todo lo visual.
-Tradeoff aceptado en `ADR-011`: se pierden features avanzadas del driver ANSI
-(negociación de capacidades, teclado Kitty, true color fino), que no hacen falta para
-menús, listas y charts ASCII.
-
-### Cómo se usa (código real)
+**Cómo funciona.** 1) `Init(...DOTNET)` resuelve la fábrica de ese driver. 2) El driver
+emite las secuencias de escape al dibujar. 3) El resto del código no cambia. 4) Es un
+workaround: se revisa cuando el bug se corrija upstream.
 
 ```cs
-// src/FocusBlock.Tui/App.cs:19-23
+// src/FocusBlock.Tui/App.cs
 public void Run()
 {
-    _app.Init(DriverRegistry.Names.DOTNET);   // workaround: driver ANSI roto en Linux
+    _app.Init(DriverRegistry.Names.DOTNET);   // ANSI roto en Linux
     _app.Run(MainWindow);
 }
 ```
 
-### Error común
+**Trampa.** Culpar al layout cuando la ventana sale vacía. Si compila y no se ven las
+subviews, sospecha del driver. Los tests no lo detectan porque no abren terminal.
 
-Copiar el ejemplo oficial tal cual y culpar al layout cuando la ventana sale vacía. Otra
-variante: intentar arreglarlo agregando o quitando `Add(...)` cuando el problema es el
-driver, no la composición. Detección: si el código compila, el layout está declarado y la
-ventana no dibuja subviews, sospechar del driver antes que de la UI. Ver
-`ADR-011` para el seguimiento: revisar cuando el driver ANSI se estabilice.
+<details><summary>Verifica</summary>
 
-### Para profundizar
+1. ¿Qué capa convierte la UI en bytes?
+2. ¿Por qué el bug no lo detectan los tests unitarios?
+3. ¿Qué se pierde al usar el driver DOTNET y por qué se acepta?
 
-- [`docs/adr/ADR-011-dotnet-driver.md`](../adr/ADR-011-dotnet-driver.md) — decisión y consecuencias.
-- [Terminal.Gui issue #4848](https://github.com/gui-cs/Terminal.Gui/issues/4848)
-- [Terminal.Gui issue #4374](https://github.com/gui-cs/Terminal.Gui/issues/4374)
+</details>
 
 ---
 
-## Case-sensitivity en C# (propiedades PascalCase)
+## 4. Case-sensitivity
 
-### En una frase
+**Idea.** C# compara identificadores carácter por carácter. `Y` y `y` son nombres
+distintos, aunque se parezcan. Aplica a toda la API de la librería.
 
-En C#, `Y` y `y` son dos identificadores distintos; no es un capricho, es cómo el
-lenguaje define lo que es un nombre.
+**Analogía.** Como los nombres de archivo en Linux: `Foto.jpg` y `foto.jpg` pueden convivir.
+En Windows, en cambio, el sistema los trata como el mismo archivo.
 
-### Fundamentos previos
-
-**¿Qué es un identificador?**
-Es el nombre con el que referenciás una variable, una clase, una propiedad o un método.
-El compilador lo resuelve por *coincidencia exacta*: no adivina ni corrige.
-
-**¿Qué significa case-sensitive?**
-Significa que el lenguaje distingue mayúsculas de minúsculas al comparar nombres. En C#
-`velocidad`, `Velocidad` y `VELOCIDAD` son tres símbolos distintos que podrían coexistir
-en el mismo scope. Esto es distinto de un lenguaje *case-insensitive*, donde `y` e `Y`
-se consideran el mismo nombre.
-
-**¿Por qué C# es case-sensitive (y por qué no es un capricho)?**
-Porque permite que un identificador local y un miembro público convivan con grafías
-distintas sin colisionar. Ejemplo: dentro de un método podés tener una variable local
-`y` y, al mismo tiempo, usar la propiedad `this.Y` de una vista. Si el lenguaje ignorara
-el caso, ambos nombres chocarían. La contrapartida es que vos tenés que respetar la
-grafía exacta que la librería definió. Por eso el ecosistema .NET usa convenciones:
-`PascalCase` para miembros públicos (`Y`, `Width`), `camelCase` para locales (`width`),
-`_camelCase` para campos privados (`_statusLabel`, visible en `StatusView.cs:10`).
-
-### Qué es
-
-Una regla léxica del lenguaje: los identificadores se comparan carácter por carácter,
-incluyendo mayúsculas y minúsculas. Se combina con las convenciones de estilo de .NET
-para que la *intención* (público vs local) sea legible de un vistazo.
-
-### Qué problema resuelve
-
-Evita colisiones de nombres entre scopes y hace explícita la distinción entre miembro
-público y variable local. El costo es que hay que escribir la grafía exacta.
-
-### Cómo funciona paso a paso
-
-1. Escribís `label.y`.
-2. El compilador busca un miembro llamado exactamente `y` en el tipo `Label`.
-3. No lo encuentra (el miembro se llama `Y`) y emite `CS0103`: "el nombre 'y' no existe
-   en el contexto actual".
-4. Corregís a `label.Y` y compila.
-
-### Qué se rompería sin esto en FocusBlock
-
-El log de la Fase 0 registra el `Problema 3`: al usar Terminal.Gui, la propiedad de
-posición es `Y` y escribir `y` no compilaba. Como C# es case-sensitive, ese error es
-inmediato y visible en build time: no llega a producción. Además, si se hubiera
-"arreglado" cambiando el nombre de un miembro propio a minúscula, habría roto la
-convención PascalCase del proyecto y el tipado público.
-
-### Para qué sirve en este proyecto
-
-Aplica a todo el código: `Dim.Fill()` (no `dim.fill()`), `Pos.Right(...)` (no
-`pos.right(...)`), `Content.Height` (no `Content.height`), `_statusLabel.Text` (no
-`_statusLabel.text`). Es una regla transversal del lenguaje, no una particularidad de
-Terminal.Gui.
-
-### Cómo se usa (código real)
+**Cómo funciona.** 1) Escribes `label.y`. 2) El compilador busca exactamente `y`. 3) No
+existe (el miembro es `Y`) y emite `CS0103`. 4) Corriges la grafía y compila.
 
 ```cs
-// src/FocusBlock.Tui/Views/StatusView.cs:14-22
+// src/FocusBlock.Tui/Views/StatusView.cs
 _statusLabel = new Label
 {
-    Text = "Daemon: unknown",   // propiedad PascalCase
+    Text = "Daemon: unknown",
     X = 0,
-    Y = 0,                      // 'Y' mayúscula; 'y' daría CS0103
+    Y = 0,          // 'Y' mayúscula; 'y' daría CS0103
 };
 Add(_statusLabel);
 ```
 
-### Error común
+**Trampa.** Tipear de memoria y confiar en el autocompletado. `CS0103` en un nombre que
+"parece existir" casi siempre es un problema de mayúsculas.
 
-Confiar en que el autocompletado "sabe lo que querés" y tipear de memoria. En C# el caso
-importa siempre, incluso en miembros de librerías. Detección: `CS0103` en un nombre que
-"parece existir" casi siempre es un problema de capitalización. Letra por letra es la
-única forma de comparar: `Y` no es "lo mismo" que `y`.
+<details><summary>Verifica</summary>
 
-### Para profundizar
+1. ¿Qué significa que C# sea case-sensitive?
+2. ¿Qué error produce `label.y` y por qué?
+3. ¿Por qué la convención .NET usa PascalCase en miembros públicos?
 
-- [Framework Design Guidelines — convenciones de nombres](https://learn.microsoft.com/dotnet/standard/design-guidelines/)
-- `docs/progress-log/phase-00-setup.md` — Problema 3.
-- `docs/learning/phase-01-tui.md` — mismos errores de API al componer vistas.
+</details>
 
 ---
 
-## Relación entre estos conceptos
+## Práctica
 
-El `SDK` es la herramienta que compila; la `solución (.slnx)` agrupa los proyectos que
-ese SDK construye. Dentro de la TUI, `Terminal.Gui v2` define CÓMO se construye la UI
-(API por instancia), y el `driver DOTNET` es el workaround que hace que esa UI se dibuje
-en Linux. La `case-sensitivity` es la regla del lenguaje que aplica a todas las capas,
-incluida la API de Terminal.Gui. El orden importa: sin SDK no hay build; sin solución no
-hay build unificado; sin driver no hay render; sin respetar el caso no hay compilación.
+### Mezcla
 
----
+1. Si eliminas `Init()` y llamas `Run()`, ¿qué falla y en qué capa?
+2. ¿Por qué el test de la app no necesita una terminal real?
+3. ¿Qué ventaja tiene `.slnx` sobre enumerar `.csproj` en cada comando?
+4. ¿Qué capa dibuja un `Label` que agregas a `MainWindow`?
 
-## Convención
+<details><summary>Respuestas</summary>
+1. La terminal no queda preparada: falla la infraestructura.
+2. Depende de `IApplication`, una interfaz; el test inyecta un doble.
+3. Un único punto de entrada, legible y versionable.
+4. El driver de rendering, no el `Label`.
+</details>
 
-- **Archivo**: `docs/learning/phase-NN-name.md`, uno por fase.
-- **Título**: `# Fase NN — Tema`.
-- **Código**: bloques `cs`; líneas de ~100 caracteres.
-- **Secciones por concepto**: ver `docs/learning/template-phase.md`.
+### En código
+
+1. Cambia `Init` al driver ANSI y observa la ventana. Explica por qué los tests siguen
+   verdes.
+2. Escribe el test RED de la fase siguiente: `FocusBlockApp_CreatesMainWindow` usando
+   `Mock.Of<IApplication>()`.
+
+### Antes de cerrar
+
+- [ ] Puedo explicar qué es `IApplication` y por qué se inyecta.
+- [ ] Sé qué hace cada línea de `Program.cs` + `App.Run()`.
+- [ ] Puedo reproducir la ventana vacía y explicar su causa.
+
+## Trampas reales de la fase
+
+- **API v1 contra v2**: `CS0246` y `CS0117` por namespaces movidos y `Label` sin texto en
+  el constructor.
+- **Ventana vacía**: el driver ANSI no dibujaba las subviews; se forzó `DOTNET`.
+- **`y` minúscula**: la propiedad es `Y`; el compilador no adivina.
+
+## Para profundizar
+
+- [`ADR-001`](../adr/ADR-001-terminal-gui.md) — por qué Terminal.Gui v2.
+- [`ADR-011`](../adr/ADR-011-dotnet-driver.md) — el workaround del driver.
+- [Terminal.Gui](https://github.com/gui-cs/Terminal.Gui) — repositorio oficial.

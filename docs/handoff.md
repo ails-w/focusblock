@@ -1,7 +1,7 @@
 # Handoff — Continuidad
 
 > ⚠️ **ESTADO MUTABLE.** Se SOBREESCRIBE al cerrar sesión. No es historial.
-> Historial por fase → `docs/progress-log/`. Conceptos → `docs/learning/`.
+> Conceptos → `docs/learning/`. Decisiones → `docs/adr/`.
 > Aprendizajes y decisiones persistentes → Engram (memoria).
 
 **Última actualización**: 2026-09-24
@@ -24,6 +24,7 @@ Fase 5 — Feature 5.1 (Protector de Archivos): escribir test `FileProtector_Loc
 - Revisar ADR-012 cuando se quieran las estrategias de bloqueo por uso (Racha/Tope) — requieren telemetría del daemon.
 - Revisar ADR-004 (formato PHC) antes de Fase 5: los parámetros de Argon2id (`MemorySize`, `Iterations`) NO se guardan con el hash, así que subirlos invalida las huellas existentes. Evaluar formato PHC (`$argon2id$...`).
 - Envolver `OnEarlyStopAsync` (`App.cs`) en try/catch con un MessageBox de error: es fire-and-forget desde el menú y una excepción no capturada dejaría al usuario sin feedback.
+- Diferido de fases anteriores: campos ricos de `status_response` (`active_blocks`, `daemon_uptime`) para la fase 6.
 
 ## Riesgos activos / Gotchas
 
