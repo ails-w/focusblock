@@ -9,7 +9,7 @@
 - Código en inglés, docs en español neutro.
 - Commits convencionales; un commit por feature en `dev`.
 - PRs `dev → main` al cerrar la fase: una de código y una de docs.
-- Al cerrar: actualizar learning, glosario, este plan, `handoff.md` y el ADR si hubo decisión.
+- Protocolo de documentación (qué se actualiza y cuándo) → `AGENTS.md`.
 
 ## Resumen
 

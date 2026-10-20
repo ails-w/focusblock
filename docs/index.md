@@ -22,8 +22,8 @@ Mapa de navegación de la documentación del proyecto. Este es el **índice úni
 
 ## Reglas de docs
 
-- Idioma: Español. Nombres de carpetas/archivos en inglés.
-- Formato: Markdown.
-- Mantener `handoff.md` actualizado al iniciar/cerrar sesión.
-- Al **cerrar** cada fase se crean o actualizan: `learning/phase-NN-name.md` (conceptos), `learning/glossary.md` (términos nuevos), `phase-plan.md` (estado y features) y `handoff.md`. Si hubo una decisión arquitectónica, se escribe o actualiza un ADR.
-- ADRs: una decisión = un archivo en `docs/adr/`; cada ADR refleja la decisión vigente y se actualiza cuando la decisión cambia.
+- Idioma: español neutro; nombres de carpetas y archivos en inglés.
+- Formato: Markdown, con bloques de código `cs`.
+- Cada documento tiene una sola responsabilidad; el índice no repite contenido.
+- **Protocolo de actualización** (qué se toca y cuándo) → `AGENTS.md`.
+- ADRs: una decisión = un archivo; cada ADR refleja la decisión vigente.
