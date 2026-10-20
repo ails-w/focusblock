@@ -25,4 +25,4 @@ El anti-bypass necesita proteger la contraseña de desbloqueo temprano almacenad
 
 ## Referencias
 
-- `docs/vision.md` (Seguridad) · Fase 2 (`docs/learning/phase-02-config.md`)
+- `docs/project.md` (Alcance y competencias) · Fase 2 (`docs/learning/phase-02-config.md`)

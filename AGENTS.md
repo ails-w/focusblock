@@ -24,7 +24,7 @@ FocusBlock es una app TUI en C#/.NET 10 para bloquear aplicaciones en Arch Linux
 - Test: `dotnet test`
 - Test individual: `dotnet test --filter "FullyQualifiedName~NombreTest"`
 - Run TUI: `dotnet run --project src/FocusBlock.Tui`
-- **NUNCA ejecutar**: `dotnet publish` — solo para deployment (ver `docs/development-plan.md`)
+- **NUNCA ejecutar**: `dotnet publish` — solo para deployment (ver `docs/project.md`)
 
 ## Mapa del repo
 
@@ -58,7 +58,7 @@ Este es un proyecto de **APRENDIZAJE**. El objetivo principal es que el estudian
 
 - Framework: xUnit + Moq + FluentAssertions.
 - Ubicación: `tests/FocusBlock.Tests.Unit/` (carpetas `Services/`, `Models/`).
-- Pirámide: unit (fakes por seams) → integración en host → funcional en host — ver `docs/development-plan.md`.
+- Pirámide: unit (fakes por seams) → integración en host → funcional en host — ver `docs/project.md`.
 
 ## Límites / Do-nots
 

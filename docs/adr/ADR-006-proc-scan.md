@@ -18,7 +18,7 @@ Escaneo directo de **`/proc`** (leer `/proc/[pid]/status` y extraer el nombre).
 ## Consecuencias
 
 - Más confiable en Linux, con control fino.
-- Reafirma que el proyecto es Linux-only (ver `docs/vision.md`).
+- Reafirma que el proyecto es Linux-only (ver `docs/project.md`, fuera de alcance).
 
 ## Referencias
 
