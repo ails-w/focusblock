@@ -1,85 +1,105 @@
-# Fase {{NN}} — {{Tema central}}
+# Fase NN — Tema central
 
-> Qué se aprende en esta fase y por qué importa.
-> Cómo se conecta con las fases vecinas.
-> Log de la fase → `docs/progress-log/phase-{{NN}}-{{nombre}}.md`
+> Qué construye esta fase, en una línea.
+> Antes: [Fase NN-1](phase-NN-1-name.md) · Después: [Fase NN+1](phase-NN+1-name.md) ·
+> [Glosario](glossary.md)
 
-## Glosario de la fase
+## Dónde estamos
 
-| Término | Qué significa (en una línea) |
-|---|---|
-| {{término}} | {{definición mínima}} |
-
-## Mapa de conceptos
+3 líneas: qué existe hoy y qué falta. Sin repetir el mapa completo del sistema.
 
 ```text
-{{Diagrama ASCII: qué concepto depende de cuál.}}
+Diagrama de 5-8 líneas: flujo del sistema con esta fase resaltada.
 ```
 
-## Puntos de inyección de la fase
+## Qué construye esta fase
 
-| Componente | Seam | Doble | Test real |
+4 líneas: resultado visible y piezas nuevas. Sin jerga todavía.
+
+## El recorrido de una acción
+
+Un caso concreto, numerado 1-6, con nombres reales del proyecto. Es el hilo que une
+todos los conceptos.
+
+## Los conceptos
+
+| # | Concepto | Idea en una línea | Código |
 |---|---|---|---|
-| {{Componente}} | {{Punto de inyección}} | {{Doble para unit}} | {{Test real de integración}} |
+| 1 | Nombre llano | Qué resuelve | `src/...` |
 
 ---
 
-## {{Concepto}}
+## 1. Título llano
 
-### En una frase
-{{La idea central, sin jerga.}}
+**Idea.** La definición sin jerga y por qué importa en FocusBlock. 2 líneas.
 
-### Fundamentos previos
-{{Términos e ideas que hay que entender ANTES de este concepto. Explicá cada uno acá mismo.
-No asumas conocimiento previo. Si depende de un concepto de otra fase, referencialo.}}
+**Analogía.** 1-2 líneas, concreta y extensible. Debe explicar la mecánica, no decorar.
 
-### Qué es
-{{Definición desarrollada. Explicar, no nombrar.}}
+**Cómo funciona.** 1) Paso con su porqué. 2) Paso con su porqué. 3) Paso con su porqué.
 
-### Qué problema resuelve
-{{El dolor concreto que existiría sin esto.}}
-
-### Cómo funciona paso a paso
-{{La mecánica interna, numerada. El porqué detrás de cada paso.}}
-
-### Qué se rompería sin esto en FocusBlock
-{{Contrafactual concreto y específico de este proyecto.}}
-
-### Para qué sirve en este proyecto
-{{Dónde se usa y por qué acá.}}
-
-### Cómo se usa (código real)
 ```cs
-{{Código real del repo. Referenciar archivo:línea cuando aporte.}}
+// archivo.cs — solo lo que sorprende
 ```
 
-### Error común
-{{Qué se hace mal, por qué, y cómo detectarlo.}}
+**Trampa.** El error real y cómo detectarlo. 1-2 líneas.
 
-### Punto de inyección (si aplica)
-{{Si el concepto depende del sistema operativo (filesystem, `/proc`, señales, `chattr`, reloj,
-sockets, SQLite), nombrá acá el **seam** con el que se testea, el **doble** que se usa en unit
-y el **test real de integración** en host. Si el concepto no toca el SO, omití esta sección.}}
+<details><summary>Verifica</summary>
 
-### Para profundizar
-{{Referencias oficiales + conceptos relacionados + links a otros docs.}}
+1. Pregunta de recuerdo.
+2. Pregunta de comprensión o caso borde.
+3. Pregunta de aplicación o código.
 
----
-
-## Relación entre estos conceptos
-{{Qué depende de qué y por qué el orden importa.}}
+</details>
 
 ---
 
-## Convención
+## Práctica
 
-- **Archivo**: `docs/learning/phase-{{NN}}-{{nombre}}.md` (ej: `phase-03-daemon.md`)
-- **Título**: `# Fase {{NN}} — {{Tema}}`
-- **Un archivo por fase**, creado al comenzar la fase.
-- **Secciones por concepto**: En una frase / Fundamentos previos / Qué es /
-  Qué problema resuelve / Cómo funciona paso a paso / Qué se rompería sin esto /
-  Para qué sirve en este proyecto / Cómo se usa / Error común / Punto de inyección (si aplica) /
-  Para profundizar.
-- **Glosario + mapa de conceptos**: obligatorios al inicio del archivo de cada fase.
-- **Puntos de inyección**: sección por concepto (si toca el SO) + tabla de fase; el catálogo completo vive en `docs/development-plan.md`.
-- **Código**: bloques `cs` (nunca el alias largo de C#) y líneas de máximo ~100 caracteres.
+### Mezcla
+
+4 preguntas que cruzan conceptos. Respuestas plegadas.
+
+<details><summary>Respuestas</summary>
+
+1. ...
+
+</details>
+
+### En código
+
+1. Predice qué pasa si...
+2. Encuentra el bug en...
+3. Escribe el test RED de...
+
+### Antes de cerrar
+
+- [ ] Puedo explicar cada concepto sin mirar.
+- [ ] Puedo dibujar el recorrido de la fase de memoria.
+- [ ] Sé qué archivo tocar para cambiar el comportamiento.
+
+## Trampas reales de la fase
+
+3-5 errores que aparecieron de verdad, una línea cada uno.
+
+## Para profundizar
+
+Máximo 3 enlaces: ADR de la decisión, código real, una referencia externa.
+
+---
+
+## Reglas de escritura
+
+| Bloque | Límite |
+|---|---|
+| Archivo completo | 280 líneas |
+| Concepto | 40 líneas |
+| Código por concepto | 10 líneas |
+| Enlaces por fase | 3 |
+| Conceptos por fase | 4-6 |
+
+- Una idea por concepto. Si necesitas dos, son dos conceptos.
+- La jerga aparece después de la idea, nunca antes.
+- Nada se explica dos veces: la segunda vez es un enlace al glosario.
+- Cada concepto termina en `Verifica`; sin preguntas, el concepto no está terminado.
+- Se corta sin piedad. Lo eliminado queda en el historial de git.
+- Español neutro: "usa", "escribe", "verifica". Sin voseo ni regionalismos.
