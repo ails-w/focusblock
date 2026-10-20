@@ -24,4 +24,4 @@ El proyecto exige TDD estricto y una pirámide de testing (unit → integración
 
 ## Referencias
 
-- `docs/development-plan.md` (Pirámide y ciclo TDD) · `AGENTS.md` (TDD estricto) · `docs/adr/ADR-009-testing-seams.md`
+- `docs/project.md` (Pirámide y ciclo TDD) · `AGENTS.md` (TDD estricto) · `docs/adr/ADR-009-testing-seams.md`

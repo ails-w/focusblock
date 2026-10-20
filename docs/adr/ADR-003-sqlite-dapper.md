@@ -23,4 +23,4 @@ El daemon necesita persistir métricas de bloqueo y uso (eventos, uso diario, in
 
 ## Referencias
 
-- `docs/architecture.md` (Esquema SQLite) · `docs/development-plan.md`
+- `docs/architecture.md` (Esquema SQLite) · `docs/project.md` (Testing)

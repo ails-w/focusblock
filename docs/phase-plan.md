@@ -1,454 +1,164 @@
 # Plan de Fases — FocusBlock
 
-> Índice maestro del desarrollo. La fase activa tiene detalle expandido.
+> Índice maestro del desarrollo. Las fases cerradas se resumen; la próxima se detalla.
 > Conceptos → `docs/learning/phase-NN-name.md` · Estado mutable → `docs/handoff.md`
 
 ## Reglas globales
 
-- TDD estricto: RED → GREEN → REFACTOR (test ANTES de implementar).
-- Código en inglés, docs en español.
-- Commits convencionales (feat:, fix:, test:, docs:, refactor:).
-- Cada feature termina en **commit** en `dev`. Las PRs (`dev → main`) se abren al cerrar la fase: una de código y otra de docs.
-- Al cerrar una fase: actualizar `learning/`, `glossary.md`, `phase-plan.md` (estado y features) y `handoff.md` + commit.
+- TDD estricto: RED → GREEN → REFACTOR. Test antes de implementar.
+- Código en inglés, docs en español neutro.
+- Commits convencionales; un commit por feature en `dev`.
+- PRs `dev → main` al cerrar la fase: una de código y una de docs.
+- Al cerrar: actualizar learning, glosario, este plan, `handoff.md` y el ADR si hubo decisión.
 
-## Resumen de fases
+## Resumen
 
-| # | Nombre | Estado | Conceptos |
-|---|--------|--------|-----------|
-| 0 | Setup | ✅ | `learning/phase-00-setup.md` |
-| 1 | Esqueleto TUI | ✅ | `learning/phase-01-tui.md` |
-| 2 | Configuración | ✅ | `learning/phase-02-config.md` |
-| 3 | Daemon y monitor | ✅ | `learning/phase-03-daemon.md` |
-| 4 | Núcleo bloqueador | ✅ | `learning/phase-04-blocker.md` |
-| 5 | Anti-bypass | ⏳ | `learning/phase-05-antibypass.md` |
-| 6 | Métricas | ⏳ | `learning/phase-06-metrics.md` |
-| 7 | Pulido y testing | ⏳ | `learning/phase-07-polish.md` |
+| # | Nombre | Estado | Tests al cierre | Conceptos |
+|---|---|---|---|---|
+| 0 | Setup | ✅ | 0 | `learning/phase-00-setup.md` |
+| 1 | Esqueleto TUI | ✅ | 6 | `learning/phase-01-tui.md` |
+| 2 | Configuración | ✅ | 13 | `learning/phase-02-config.md` |
+| 3 | Daemon y monitor | ✅ | 32 | `learning/phase-03-daemon.md` |
+| 4 | Núcleo bloqueador | ✅ | 91 | `learning/phase-04-blocker.md` |
+| 5 | Anti-bypass | ⏳ | — | `learning/phase-05-antibypass.md` |
+| 6 | Métricas | ⏳ | — | `learning/phase-06-metrics.md` |
+| 7 | Pulido y testing | ⏳ | — | `learning/phase-07-polish.md` |
 
 ---
 
 ## Fase 0 — Setup ✅
 
-**Objetivo:** dejar lista la solución .NET, el esqueleto TUI y la infraestructura de tests.
+**Objetivo:** solución .NET, proyecto TUI y base de tests.
 
-### Scope
+**Scope:** solución `.slnx`, `FocusBlock.Tui` con Terminal.Gui v2, `FocusBlock.Tests.Unit`
+con xUnit + Moq + FluentAssertions.
 
-- Solución `.slnx` + proyectos base (`src/`, `tests/`).
-- Hello World TUI con Terminal.Gui v2.
-- Infraestructura de tests (xUnit + Moq + FluentAssertions).
+**Conceptos:** API por instancia · formato `.slnx` · driver DOTNET en Linux.
 
-### Fuera de scope
-
-- Lógica de negocio, configuración, daemon, IPC.
-
-### Conceptos de aprendizaje
-
-- [x] Terminal.Gui v2 API por instancia → `docs/learning/phase-00-setup.md`
-- [x] Formato `.slnx` de .NET 10 → `docs/learning/phase-00-setup.md`
-- [x] Driver DOTNET workaround en Linux → `docs/learning/phase-00-setup.md`
-
-### Criterio de salida
-
-- [x] `dotnet run` muestra ventana TUI con label.
-- [x] Proyecto de tests compila y corre.
+**Salida:** `dotnet run` muestra la ventana y `dotnet test` corre desde la raíz.
 
 ---
 
 ## Fase 1 — Esqueleto TUI ✅
 
-**Objetivo:** construir la estructura de la TUI: orquestación de la app, ventana principal con menú y navegación entre vistas placeholder.
+**Objetivo:** estructura navegable de la TUI.
 
-### Scope
+**Scope:** `FocusBlockApp`, `MainWindow` con menú y barra de estado, navegación entre
+`StatusView`, `BlockListView` y `AddBlockView`.
 
-- `FocusBlockApp` (orquestación).
-- `MainWindow` con MenuBar y StatusBar.
-- Navegación entre vistas.
-- `StatusView` (estado del daemon), `BlockListView` (lista de bloqueos), `AddBlockView` (formulario placeholder).
+**Conceptos:** composición y layout · navegación · DI y Composition Root ·
+container/presentational · records y `ObservableCollection` · tests aislados.
 
-### Fuera de scope
-
-- Daemon real, IPC real, configuración real, persistencia (fases 2-6).
-
-### Conceptos de aprendizaje
-
-- [x] Terminal.Gui v2: vistas, layout, navegación → `docs/learning/phase-01-tui.md`
-- [x] Composición de UI con `IApplication` → `docs/learning/phase-01-tui.md`
-
-### Criterio de salida
-
-- [x] La TUI arranca y muestra MainWindow con menú.
-- [x] La navegación entre vistas funciona con datos placeholder.
-- [x] Tests unitarios de orquestación y vistas verdes.
-
-### Features (TDD)
-
-#### Feature 1.1: Orquestación de la App
-- [x] Escribir test: `FocusBlockApp_CreatesMainWindow` (RED)
-- [x] Crear `App.cs` con clase `FocusBlockApp` (GREEN)
-- [x] Refactorizar si es necesario
-
-#### Feature 1.2: Ventana Principal con Menú
-- [x] Escribir test: `MainWindow_HasMenuBarAndStatusBar` (RED)
-- [x] Crear `Views/MainWindow.cs` con MenuBar, StatusBar (GREEN)
-- [x] Implementar items de menú: Block, View, Settings, Help
-
-#### Feature 1.3: Navegación entre Vistas
-- [x] Escribir test: `MainWindow_MenuNavigatesToViews` (RED)
-- [x] Implementar lógica de cambio de vistas (GREEN)
-
-#### Feature 1.4: Vista de Estado
-- [x] Escribir test: `StatusView_DisplaysDaemonStatus` (RED)
-- [x] Crear `Views/StatusView.cs` (GREEN)
-- [x] Implementar método `RefreshStatus()`
-
-#### Feature 1.5: Lista de Bloqueos
-- [x] Escribir test: `BlockListView_DisplaysListOfApps` (RED)
-- [x] Crear `Views/BlockListView.cs` (GREEN)
-
-#### Feature 1.6: Agregar Bloqueo (Placeholder)
-- [x] Escribir test: `AddBlockView_ShowsFormFields` (RED)
-- [x] Crear `Views/AddBlockView.cs` con formulario placeholder (GREEN)
+**Salida:** la TUI navega con datos placeholder y los tests de orquestación están verdes.
 
 ---
 
-## Fase 2 — Sistema de Configuración ✅
+## Fase 2 — Configuración ✅
 
-**Objetivo:** modelos de configuración, serialización JSON y hashing de contraseñas.
+**Objetivo:** config persistente y contraseña protegida.
 
-### Scope
+**Scope:** `FocusBlock.Contracts` con `AppConfig`, `BlockRuleConfig` y `SecurityConfig`;
+serialización JSON; `ConfigService` async; `AuthService` con Argon2id.
 
-- Proyecto `FocusBlock.Contracts/` con modelos `AppConfig`, `BlockRuleConfig`, `SecurityConfig`.
-- Serialización con `System.Text.Json` (round-trip).
-- `ConfigService` con carga/guardado async.
-- `AuthService` con Argon2id (hash + verify).
+**Conceptos:** modelos y defaults · JSON round-trip · async/await · hashing seguro
+(Argon2id, sal, costo y tiempo constante).
 
-### Fuera de scope
-
-- Daemon, IPC, motor de reglas, métricas.
-
-### Conceptos de aprendizaje
-
-- [x] Records y modelos de configuración → `docs/learning/phase-02-config.md`
-- [x] `System.Text.Json` round-trip y converters → `docs/learning/phase-02-config.md`
-- [x] Async I/O en archivos → `docs/learning/phase-02-config.md`
-- [x] Hashing de contraseñas (Argon2id, salt) → `docs/learning/phase-02-config.md`
-
-**Puntos de inyección:** filesystem de `ConfigService` (ruta inyectada).
-
-### Criterio de salida
-
-- [x] `ConfigService` carga defaults si falta archivo y persiste cambios.
-- [x] `AuthService` hash/verify con Argon2id pasa tests.
-- [x] Suite unitaria de la fase verde.
-
-### Features (TDD)
-
-#### Feature 2.1: Modelos de Configuración
-- [x] Escribir test: `AppConfig_DefaultValues_AreCorrect` (RED)
-- [x] Crear proyecto `FocusBlock.Contracts/` (GREEN)
-- [x] Crear modelos: `AppConfig`, `BlockRuleConfig`, `SecurityConfig`
-- [x] Agregar a solución
-
-#### Feature 2.2: Serialización JSON
-- [x] Escribir test: `AppConfig_SerializeDeserialize_RoundTrips` (RED)
-- [x] Implementar serialización con `System.Text.Json` (GREEN)
-- [x] Manejar converter personalizado para `TimeOnly` si se necesita
-
-#### Feature 2.3: Servicio de Configuración
-- [x] Escribir test: `ConfigService_LoadAsync_ReturnsDefaults_WhenFileMissing` (RED)
-- [x] Escribir test: `ConfigService_SaveAsync_PersistsToFile` (RED)
-- [x] Crear `Services/ConfigService.cs` (GREEN)
-- [x] Implementar carga/guardado con async/await
-
-#### Feature 2.4: Hashing de Contraseñas
-- [x] Escribir test: `AuthService_HashPassword_ReturnsHashAndSalt` (RED)
-- [x] Escribir test: `AuthService_VerifyPassword_ReturnsTrue_WhenCorrect` (RED)
-- [x] Escribir test: `AuthService_VerifyPassword_ReturnsFalse_WhenWrong` (RED)
-- [x] Agregar paquete Argon2: `dotnet add package Konscious.Security.Cryptography.Argon2`
-- [x] Crear `Services/AuthService.cs` (GREEN)
-- [x] Implementar `HashPassword()` y `VerifyPassword()`
+**Salida:** la config sobrevive al reinicio y hash/verify pasan sus tests.
 
 ---
 
-## Fase 3 — Daemon y Monitor de Procesos ✅
+## Fase 3 — Daemon y monitor ✅
 
-**Objetivo:** daemon root que monitorea `/proc`, mata procesos y sirve IPC por Unix socket.
+**Objetivo:** daemon root que observa procesos, actúa sobre ellos y sirve IPC.
 
-**Cerrada:** 2026-09-15. Features 3.1–3.4 implementadas y testeadas (32 tests). El **cableado end-to-end** (`Program.cs`, mapeo nombre→PID, handler IPC real) se difiere a Fase 4 (BlockEngine). Detalle en `learning/phase-03-daemon.md`.
+**Scope:** `Worker` (`BackgroundService`), `ProcessMonitor` sobre `/proc`,
+`BlockEnforcer` con SIGTERM → SIGKILL, `IpcServer` en Unix socket.
 
-### Scope
+**Conceptos:** ciclo de vida del worker · escaneo de `/proc` · P/Invoke y señales ·
+Unix domain sockets y framing.
 
-- Proyecto `FocusBlock.Daemon/` con `Worker` (BackgroundService).
-- `ProcessMonitor` escaneando `/proc`.
-- `BlockEnforcer` con SIGTERM → SIGKILL (P/Invoke).
-- `IpcServer` en Unix socket.
+**Puntos de inyección:** `IProcessSource`, `ISignalSender`, ruta del socket y tick.
 
-### Fuera de scope
-
-- Motor de reglas (Fase 4), anti-bypass (Fase 5), métricas (Fase 6).
-
-### Conceptos de aprendizaje
-
-- [x] `BackgroundService` y ciclo de vida del worker → `docs/learning/phase-03-daemon.md`
-- [x] Escaneo de `/proc` en Linux → `docs/learning/phase-03-daemon.md`
-- [x] P/Invoke y señales (SIGTERM/SIGKILL) → `docs/learning/phase-03-daemon.md`
-- [x] Unix domain sockets (servidor) → `docs/learning/phase-03-daemon.md`
-
-**Puntos de inyección:** `IProcessSource` (`/proc`), `ISignalSender` (`kill`) y ruta del socket.
-
-### Criterio de salida
-
-- [x] Componentes del daemon implementados y testeados (Worker, ProcessMonitor, BlockEnforcer, IpcServer).
-- [~] Daemon arranca como servicio, escanea procesos y mata por nombre → **cableado end-to-end diferido a Fase 4**.
-- [~] Responde a requests IPC (status, add_block, remove_block) → **handler real diferido a Fase 4**.
-- [x] Tests unitarios + integración verdes (32).
-
-### Features (TDD)
-
-#### Feature 3.1: Worker BackgroundService
-- [x] Escribir test: `Worker_StartsAndRunsUntilCancelled` (RED)
-- [x] Crear proyecto `FocusBlock.Daemon/` (GREEN)
-- [x] Agregar `Worker.cs` como `BackgroundService`
-- [x] Agregar a solución
-
-#### Feature 3.2: Monitor de Procesos
-- [x] Escribir test: `ProcessMonitor_GetRunningProcesses_ReturnsList` (RED)
-- [x] Crear `Services/ProcessMonitor.cs` (GREEN)
-- [x] Implementar escaneo de `/proc`
-- [x] Escribir test: `ProcessMonitor_ExtractProcessName_ParsesStatus` (RED)
-- [x] Implementar helper `ExtractProcessName()`
-
-#### Feature 3.3: Ejecutor de Bloqueos
-- [x] Escribir test: `BlockEnforcer_KillProcessAsync_SendsSigterm` (RED)
-- [x] Crear `Services/BlockEnforcer.cs` (GREEN)
-- [x] Implementar P/Invoke `kill()` syscall
-- [x] Escribir test: `BlockEnforcer_KillProcessAsync_EscalatesToSigkill_WhenSigtermFails` (RED)
-- [x] Implementar escalación SIGTERM → SIGKILL
-
-#### Feature 3.4: Servidor IPC
-- [x] Escribir test: `IpcServer_HandlesStatusRequest` (RED)
-- [x] Crear `Services/IpcServer.cs` (GREEN)
-- [x] Implementar escuchador Unix socket
-- [x] Escribir test: `IpcServer_HandlesAddBlockRequest` (RED)
-- [x] Implementar enrutamiento de mensajes
-- [x] Escribir test: `IpcServer_ReturnsError_WhenRequestIsMalformed` (RED)
-- [x] Escribir test: `IpcServer_HandlesMultipleRequests_OnSameConnection` (RED)
-- [x] Escribir test: `IpcServer_DeletesSocketFile_AfterStop` (RED)
+**Salida:** componentes testeados. El cableado end-to-end se difiere a la fase 4.
 
 ---
 
-## Fase 4 — Núcleo del Bloqueador ✅
+## Fase 4 — Núcleo del bloqueador ✅
 
-**Objetivo:** motor de reglas, cooldown thread-safe y sistema de challenges.
+**Objetivo:** decidir qué bloquear, ejecutarlo y permitir un early stop controlado.
 
-**Completada:** features 4.1–4.4 implementadas y testeadas (91 tests). Cierre documental en `learning/phase-04-blocker.md`.
+**Scope:** `BlockEngine` (reglas puras), `CooldownManager` thread-safe,
+`ChallengeSystem`, flujo de early stop con contraseña y `FocusBlock.Core` para compartir
+`IPasswordVerifier` y `ConfigService`.
 
-### Scope
+**Conceptos:** evaluación de reglas · cooldown y concurrencia · bucle de bloqueo ·
+contrato IPC · early stop (fricción + contraseña) · inversión de dependencias.
 
-- `BlockEngine` evaluación de reglas (horarios, estado).
-- `CooldownManager` thread-safe.
-- `ChallengeSystem` (texto aleatorio de verificación).
-- Flujo de early stop (cooldown + challenge + contraseña).
+**Nota:** `Channel<T>` no aplicó; el bucle es secuencial. Candidato para la fase 6.
 
-### Fuera de scope
-
-- Protección de archivos con `chattr +i` (Fase 5).
-
-### Conceptos de aprendizaje
-
-- [x] Evaluación de reglas de dominio → `docs/learning/phase-04-blocker.md`
-- [x] Thread-safety y colecciones concurrentes → `docs/learning/phase-04-blocker.md`
-- [x] Patrón producer/consumer con `Channel<T>` → **no aplicó**: el bucle del `Worker` es secuencial (un tick a la vez), no hizo falta un canal. Documentado como nota honesta en `docs/learning/phase-04-blocker.md`.
-
-**Puntos de inyección:** `BlockEngine` es una función pura (`now` entra por parámetro, sin seam); `TimeProvider` es el reloj del `CooldownManager`.
-
-### Criterio de salida
-
-- [x] `BlockEngine` decide bloquear según horario/estado con tests verdes.
-- [x] Cooldown funciona de forma thread-safe y expira correctamente.
-- [x] Early stop requiere challenge + contraseña correcta.
-
-### Features (TDD)
-
-#### Feature 4.1: Motor de Reglas
-- [x] Escribir test: `BlockEngine_Evaluate_ReturnsBlock_WhenInSchedule` (RED)
-- [x] Escribir test: `BlockEngine_Evaluate_ReturnsNoBlock_WhenOutsideSchedule` (RED)
-- [x] Escribir test: `BlockEngine_Evaluate_ReturnsNoBlock_WhenRuleDisabled` (RED)
-- [x] Crear `Services/BlockEngine.cs` (GREEN)
-- [x] Implementar lógica de evaluación de reglas (incluye ventanas que cruzan medianoche)
-
-#### Feature 4.2: Gestor de Cooldown
-- [x] Escribir test: `CooldownManager_StartCooldown_SetsExpiry` (RED)
-- [x] Escribir test: `CooldownManager_IsOnCooldown_ReturnsTrue_WhenActive` (RED)
-- [x] Escribir test: `CooldownManager_IsOnCooldown_ReturnsFalse_WhenExpired` (RED)
-- [x] Crear `Services/CooldownManager.cs` (GREEN)
-- [x] Implementar tracking thread-safe de cooldowns
-
-#### Feature 4.3: Sistema de Challenges
-- [x] Escribir test: `ChallengeSystem_GenerateChallenge_ReturnsRandomText` (RED)
-- [x] Crear `Services/ChallengeSystem.cs` (GREEN)
-- [x] Escribir test: `ChallengeDialog_ShowsChallenge_AndValidatesInput` (RED)
-- [x] Escribir test: `ChallengeDialog_ValidateInput_ReturnsFalse_WhenInputWrong` (RED)
-- [x] Escribir test: `ChallengeDialog_HasOkAndCancelButtons` (RED)
-- [x] Crear `ChallengeDialog` TUI (GREEN)
-
-#### Feature 4.4: Flujo de Early Stop
-- [x] Escribir test: `BlockEngine_TryEarlyStop_ReturnsTrue_WhenPasswordCorrect` (RED)
-- [x] Escribir test: `BlockEngine_TryEarlyStop_ReturnsFalse_WhenPasswordWrong` (RED)
-- [x] Implementar `TryEarlyStop()` en BlockEngine (GREEN)
-- [x] Conectar cooldown + challenge + verificación de contraseña
+**Salida:** el daemon bloquea de punta a punta, el early stop arranca cooldown y los 91
+tests están verdes.
 
 ---
 
-## Fase 5 — Seguridad Anti-Bypass ⏳
+## Fase 5 — Seguridad anti-bypass ⏳
 
 **Objetivo:** impedir que el usuario desactive el bloqueo editando archivos o servicios.
 
-### Scope
+**Scope:** `FileProtector` con `chattr +i` (ioctl por P/Invoke); `SecurityManager` que
+bloquea la config durante un bloqueo activo; tests de integración con filesystem real.
 
-- `FileProtector` con `chattr +i` (ioctl P/Invoke).
-- `SecurityManager` bloqueando config durante bloqueo activo.
-- Tests de integración con filesystem real.
+**Fuera de scope:** JWT, autenticación de red, cifrado de disco.
 
-### Fuera de scope
+**Conceptos:** `chattr +i` e `ioctl` · P/Invoke avanzado.
 
-- JWT, autenticación de red, cifrado de disco.
+**Punto de inyección:** `IFileAttributes`.
 
-### Conceptos de aprendizaje
+**Salida:** la config queda inmutable durante el bloqueo, desbloquear exige contraseña y
+los tests de integración están verdes.
 
-- [ ] `chattr +i` y `ioctl` en Linux → `docs/learning/phase-05-antibypass.md`
-- [ ] P/Invoke avanzado (structs, syscalls) → `docs/learning/phase-05-antibypass.md`
+### Features
 
-**Puntos de inyección:** `IFileAttributes` (`chattr +i`).
+**5.1 Protector de archivos**
+- [ ] Test RED: `FileProtector_LockFile_SetsImmutableFlag`.
+- [ ] `Services/FileProtector.cs` con P/Invoke para `ioctl`.
+- [ ] Test RED: `FileProtector_UnlockFile_ClearsImmutableFlag`.
 
-### Criterio de salida
+**5.2 Gestor de seguridad**
+- [ ] Test RED: `SecurityManager_LockConfig_DuringActiveBlock`.
+- [ ] `Services/SecurityManager.cs`.
+- [ ] Test RED: `SecurityManager_TryUnlockConfig_RequiresPassword`.
 
-- [ ] Config inmodificable durante bloqueo activo (`chattr +i` verificado).
-- [ ] Unlock requiere contraseña.
-- [ ] Tests de integración con filesystem real verdes.
-
-### Features (TDD)
-
-#### Feature 5.1: Protector de Archivos
-- [ ] Escribir test: `FileProtector_LockFile_SetsImmutableFlag` (RED)
-- [ ] Crear `Services/FileProtector.cs` (GREEN)
-- [ ] Implementar P/Invoke para `ioctl` (chattr +i)
-- [ ] Escribir test: `FileProtector_UnlockFile_ClearsImmutableFlag` (RED)
-
-#### Feature 5.2: Gestor de Seguridad
-- [ ] Escribir test: `SecurityManager_LockConfig_DuringActiveBlock` (RED)
-- [ ] Crear `Services/SecurityManager.cs` (GREEN)
-- [ ] Implementar bloqueo de config durante bloques activos
-- [ ] Escribir test: `SecurityManager_TryUnlockConfig_RequiresPassword` (RED)
-
-#### Feature 5.3: Test de Integración
-- [ ] Escribir test integración: `SecurityManager_WithRealFile_LocksAndUnlocks` (RED)
-- [ ] Probar con filesystem real (GREEN)
-- [ ] Verificar que `chattr +i` previene eliminación
+**5.3 Integración**
+- [ ] Test `SecurityManager_WithRealFile_LocksAndUnlocks` con filesystem real.
+- [ ] Verificar que `chattr +i` impide eliminar la config.
 
 ---
 
-## Fase 6 — Métricas y Analytics ⏳
+## Fase 6 — Métricas ⏳
 
-**Objetivo:** registrar eventos de bloqueo y uso diario en SQLite, con gráficos ASCII en la TUI.
+**Objetivo:** registrar bloqueos y uso diario en SQLite, con gráficos en la TUI.
 
-### Scope
+**Scope:** esquema SQLite (`block_events`, `app_usage`, `bypass_attempts`),
+`MetricsCollector` con Dapper, UPSERT de uso diario y `MetricsView` con Spectre.Console.
 
-- Esquema SQLite (block_events, app_usage, bypass_attempts).
-- `MetricsCollector` con Dapper.
-- UPSERT de uso diario.
-- `MetricsView` con charts (Spectre.Console).
+**Fuera de scope:** analytics avanzado, dashboard web, exportación.
 
-### Fuera de scope
+**Conceptos:** SQLite + Dapper · UPSERT y queries agregadas · charts ASCII.
 
-- Analytics avanzado, dashboard web, exportación.
+**Punto de inyección:** conexión SQLite de `MetricsCollector`.
 
-### Conceptos de aprendizaje
-
-- [ ] SQLite + Dapper → `docs/learning/phase-06-metrics.md`
-- [ ] UPSERT y queries agregadas → `docs/learning/phase-06-metrics.md`
-- [ ] Charts ASCII con Spectre.Console → `docs/learning/phase-06-metrics.md`
-
-**Puntos de inyección:** conexión SQLite (`connection string` / path) de `MetricsCollector`.
-
-### Criterio de salida
-
-- [ ] Eventos de bloqueo grabados en SQLite.
-- [ ] Uso diario acumulado con UPSERT.
-- [ ] Stats semanales visibles en la TUI.
-
-### Features (TDD)
-
-#### Feature 6.1: Configuración SQLite
-- [ ] Escribir test: `MetricsCollector_RecordBlockEvent_InsertsRow` (RED)
-- [ ] Crear `Services/MetricsCollector.cs` (GREEN)
-- [ ] Implementar inicialización de esquema SQLite
-- [ ] Agregar paquete Dapper
-
-#### Feature 6.2: Grabación de Métricas
-- [ ] Escribir test: `MetricsCollector_RecordUsage_UpdatesDailyTotal` (RED)
-- [ ] Implementar UPSERT para uso diario (GREEN)
-- [ ] Escribir test: `MetricsCollector_GetDailyStats_ReturnsWeekData` (RED)
-
-#### Feature 6.3: Charts en TUI
-- [ ] Escribir test: `MetricsView_RenderBarChart_DisplaysData` (RED)
-- [ ] Crear `Views/MetricsView.cs` (GREEN)
-- [ ] Integrar Spectre.Console para charts ASCII
-
-#### Feature 6.4: Test de Integración
-- [ ] Escribir test integración: `MetricsCollector_WithRealSQLite_PersistsAndQueries` (RED)
-- [ ] Probar con un archivo SQLite temporal (GREEN)
+**Salida:** eventos grabados, uso diario acumulado y estadísticas semanales visibles.
 
 ---
 
-## Fase 7 — Pulido y Testing ⏳
+## Fase 7 — Pulido y testing ⏳
 
 **Objetivo:** robustez, casos borde, cobertura y documentación final.
 
-### Scope
+**Scope:** manejo de errores (daemon caído, JSON corrupto), casos borde, suite completa y
+documentación final. Esta fase no agrega features.
 
-- Manejo de errores (daemon caído, JSON corrupto).
-- Casos borde (procesos desaparecidos, cooldowns circulares).
-- Suite completa con cobertura.
-- Documentación final.
+**Conceptos:** degradación elegante · cobertura y mutation testing.
 
-### Fuera de scope
-
-- Nuevas features.
-
-### Conceptos de aprendizaje
-
-- [ ] Manejo de errores y degradación elegante → `docs/learning/phase-07-polish.md`
-- [ ] Cobertura y mutation testing → `docs/learning/phase-07-polish.md`
-
-**Puntos de inyección:** `IpcClient` (ruta + socket).
-
-### Criterio de salida
-
-- [ ] Suite unitaria e integración 100% verde.
-- [ ] Cobertura > 80% unit, > 60% integración.
-- [ ] README y docs finalizados.
-
-### Features (TDD)
-
-#### Feature 7.1: Manejo de Errores
-- [ ] Escribir test: `IpcClient_ThrowsWhenDaemonNotRunning` (RED)
-- [ ] Implementar degradación elegante (GREEN)
-- [ ] Escribir test: `ConfigService_HandlesCorruptJson` (RED)
-- [ ] Implementar fallback a valores por defecto
-
-#### Feature 7.2: Casos Borde
-- [ ] Escribir test: `ProcessMonitor_HandlesMissingProcEntry` (RED)
-- [ ] Escribir test: `BlockEngine_HandlesCircularCooldown` (RED)
-- [ ] Manejar todos los casos borde
-
-#### Feature 7.3: Suite Completa de Tests
-- [ ] Ejecutar todos los unitarios: `dotnet test --filter "Category=Unit"`
-- [ ] Ejecutar todas las integraciones: `dotnet test --filter "Category=Integration"`
-- [ ] Verificar cobertura > 80% unit, > 60% integración
-- [ ] Corregir tests fallidos
-
-#### Feature 7.4: Documentación
-- [ ] Actualizar `docs/architecture.md`
-- [ ] Actualizar `docs/development-plan.md`
-- [ ] Actualizar `docs/learning/` para todas las fases
-- [ ] Finalizar `README.md`
+**Salida:** suite 100 % verde, cobertura > 80 % unit y > 60 % integración, docs finales.

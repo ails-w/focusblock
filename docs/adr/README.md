@@ -33,6 +33,7 @@ Los ADR (*Architecture Decision Records*) registran las decisiones técnicas imp
 - Estados: `Propuesto` → `Aceptado` → `Obsoleto`.
 - Usar `template-adr.md`.
 
-## Resumen en architecture
+## Índice
 
-`docs/architecture.md` mantiene una tabla resumen con links a estos ADRs. El detalle vive aquí.
+Este archivo es el índice de ADRs. `docs/architecture.md` describe el sistema; el detalle de
+cada decisión vive aquí.

@@ -1,155 +1,115 @@
-# Arquitectura del Proyecto
+# Arquitectura — FocusBlock
 
-## Visión General del Sistema
+## Visión general
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Terminal del Usuario                   │
-│  ┌─────────────────────────────────────────────────────┐ │
-│  │              FocusBlock TUI (usuario)                │ │
-│  │  Terminal.Gui v2 — menús, estado, métricas, config  │ │
-│  │  Corre como usuario regular, SIN root                │ │
-│  └──────────────────────┬──────────────────────────────┘ │
-│                         │ IPC (Unix socket)              │
-│                         ▼                                │
-│  ┌─────────────────────────────────────────────────────┐ │
-│  │           focusblock-daemon (root)                   │ │
-│  │  Servicio systemd — monitorea /proc, mata procesos   │ │
-│  │  Posee DB SQLite, archivos config, chattr +i        │ │
-│  └──────────────────────┬──────────────────────────────┘ │
-│                         │                                │
-│                         ▼                                │
-│  ┌─────────────────────────────────────────────────────┐ │
-│  │  Escaneo /proc · SIGTERM/SIGKILL · chattr +i        │ │
-│  └─────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────┘
+```text
+Usuario
+  │
+  ▼
+TUI (usuario regular) ── Unix socket ──▶ Daemon (root, systemd)
+  │                                        ├── /proc
+  │                                        ├── SIGTERM → SIGKILL
+  │                                        ├── SQLite
+  │                                        └── chattr +i
+  └── config JSON compartida ◀─────────────┘
 ```
 
-**¿Por qué esta separación?** La TUI corre como usuario regular (seguro, fácil de desarrollar). El daemon corre como root via systemd (requerido para `/proc` y `chattr +i`). IPC los mantiene desacoplados. El daemon corre **nativamente en el host** porque necesita el PID namespace del host y root (ver `docs/adr/ADR-009-testing-seams.md`).
+La TUI corre sin privilegios y el daemon como root, porque `/proc`, `kill()` y `chattr +i`
+lo requieren. El Unix socket los desacopla y permite desarrollar la UI sin escalar permisos.
+El daemon corre nativo en el host: necesita el PID namespace real y root
+(`ADR-009`).
 
----
+## Componentes
 
-## Estructura de Carpetas
+| Proyecto | Rol | Depende de |
+|---|---|---|
+| `FocusBlock.Tui` | Interfaz, cliente IPC y flujo de early stop | `Contracts`, `Core` |
+| `FocusBlock.Core` | Lógica compartida: `AuthService`, `ConfigService`, `IPasswordVerifier` | `Contracts` |
+| `FocusBlock.Daemon` | Worker, motor de reglas, enforcement y servidor IPC | `Contracts`, `Core` |
+| `FocusBlock.Contracts` | Modelos de config y contrato IPC | — |
+| `FocusBlock.Tests.Unit` | Tests unitarios de todos los proyectos | Todos |
 
-> Estructura **objetivo**: mezcla lo implementado (Tui, Contracts, Daemon con `Worker` y `ProcessMonitor`) con lo planificado (`BlockEnforcer`, `IpcServer`, `IpcClient`, `MetricsCollector`, etc.).
+La dirección importa: TUI y Daemon no se referencian entre sí. La decisión está en
+`ADR-013`.
 
-```
+## Estructura de carpetas
+
+```text
 FocusBlock/
-├── AGENTS.md                          # Fuente de contexto estático para IA
-├── README.md                          # Portafolio (inglés)
-├── FocusBlock.slnx                    # Archivo solución (.NET 10)
-├── .gitignore
-├── .editorconfig
-│
-├── src/
-│   ├── FocusBlock.Tui/                # App TUI (espacio de usuario)
-│   │   ├── Program.cs                 # Entry point
-│   │   ├── App.cs                     # Configuración Terminal.Gui
-│   │   ├── Views/
-│   │   │   ├── MainWindow.cs          # Hub de navegación
-│   │   │   ├── StatusView.cs          # Display de bloqueos activos
-│   │   │   ├── BlockListView.cs       # Lista de apps bloqueadas
-│   │   │   └── AddBlockView.cs        # Formulario nuevo bloqueo
-│   │   └── Services/
-│   │       ├── IpcClient.cs           # Cliente Unix socket
-│   │       └── ConfigService.cs       # Carga/guardado config JSON
-│   │
-│   ├── FocusBlock.Daemon/             # Daemon root (servicio systemd)
-│   │   ├── Program.cs                 # Entry point
-│   │   ├── Worker.cs                  # BackgroundService
-│   │   └── Services/
-│   │       ├── ProcessMonitor.cs      # Escaneo /proc
-│   │       ├── BlockEnforcer.cs       # Matar procesos
-│   │       └── IpcServer.cs           # Servidor Unix socket
-│   │
-│   └── FocusBlock.Contracts/          # Modelos IPC compartidos
-│       ├── IpcProtocol.cs             # Tipos de mensaje
-│       └── BlockStatus.cs             # Enum de estado
-│
-├── tests/
-│   └── FocusBlock.Tests.Unit/         # Layout plano: un archivo por clase bajo test
-│       ├── FocusBlock.Tests.Unit.csproj
-│       ├── AppConfigTests.cs
-│       ├── AuthServiceTests.cs
-│       ├── ConfigServiceTests.cs
-│       ├── ProcessMonitorTests.cs
-│       ├── WorkerTests.cs
-│       └── ...
-│
+├── FocusBlock.slnx
+├── Directory.Build.props
 ├── config/
-│   ├── focusblock.json                # Config por defecto
-│   └── focusblock-daemon.service      # Archivo systemd
-│
+│   ├── focusblock.json
+│   └── focusblock-daemon.service
+├── src/
+│   ├── FocusBlock.Contracts/
+│   │   ├── AppConfig.cs · BlockRuleConfig.cs · SecurityConfig.cs
+│   │   ├── ConfigSerializer.cs
+│   │   └── IpcProtocol.cs · IpcJson.cs
+│   ├── FocusBlock.Core/
+│   │   ├── AuthService.cs · IPasswordVerifier.cs
+│   │   └── ConfigService.cs
+│   ├── FocusBlock.Daemon/
+│   │   ├── Program.cs · Worker.cs
+│   │   └── Services/
+│   │       ├── BlockEngine.cs · BlockCoordinator.cs · CooldownManager.cs
+│   │       ├── ProcessMonitor.cs · ProcessInfo.cs · IProcessSource.cs · ProcProcessSource.cs
+│   │       ├── BlockEnforcer.cs · Signal.cs · ISignalSender.cs · LibcSignalSender.cs
+│   │       └── IpcServer.cs · IpcServerHostedService.cs · IIpcRequestHandler.cs
+│   │           · DaemonRequestHandler.cs
+│   └── FocusBlock.Tui/
+│       ├── Program.cs · App.cs
+│       ├── Models/DaemonStatus.cs
+│       ├── Services/
+│       │   ├── IpcClient.cs · IIpcClient.cs
+│       │   ├── EarlyStopService.cs · IEarlyStopPrompt.cs · TerminalEarlyStopPrompt.cs
+│       │   └── ChallengeSystem.cs
+│       └── Views/
+│           ├── MainWindow.cs · StatusView.cs · BlockListView.cs · AddBlockView.cs
+│           └── ChallengeDialog.cs · PasswordDialog.cs · AppNameDialog.cs
+├── tests/FocusBlock.Tests.Unit/        # Un archivo por clase bajo test
 └── docs/
-    ├── index.md                       # Mapa de navegación
-    ├── vision.md                      # Visión y alcance global
-    ├── phase-plan.md                  # Fases con scope y criterios de salida
-    ├── architecture.md                # Este archivo
-    ├── development-plan.md            # Estrategia de testing + deployment
-    ├── handoff.md                     # Estado mutable (fase activa, próximo paso)
-    ├── learning/                      # Conceptos por fase, glosario y método de estudio
-    └── adr/                           # ADRs (decisiones de arquitectura)
+    ├── index.md · project.md · architecture.md
+    ├── phase-plan.md · handoff.md
+    ├── learning/                       # Conceptos, glosario y método
+    └── adr/                            # Decisiones (ADR-001 a ADR-013)
 ```
-
----
 
 ## Paquetes NuGet
 
-| Paquete | Proyecto | Propósito |
-|---------|----------|-----------|
+| Paquete | Proyecto | Uso |
+|---|---|---|
 | `Terminal.Gui` | Tui | Framework TUI |
-| `Spectre.Console` | Tui | Charts, sparklines |
-| `Microsoft.Data.Sqlite` | Daemon | Proveedor SQLite ADO.NET |
-| `Dapper` | Daemon | Micro-ORM para SQL |
-| `System.Text.Json` | Ambos | Serialización JSON |
-| `Konscious.Security.Cryptography.Argon2` | Config | Hashing de contraseñas |
-| `xunit` | Tests | Framework de testing |
-| `Moq` | Tests | Librería de mocks |
-| `FluentAssertions` | Tests | Librería de assertions |
-
----
+| `Spectre.Console` | Tui | Charts y sparklines |
+| `Microsoft.Data.Sqlite` | Daemon | Proveedor SQLite |
+| `Dapper` | Daemon | Micro-ORM |
+| `System.Text.Json` | Ambos | Serialización |
+| `Konscious.Security.Cryptography.Argon2` | Core | Hashing de contraseñas |
+| `xunit`, `Moq`, `FluentAssertions` | Tests | Stack de testing |
 
 ## Protocolo IPC
 
-Comunicación via **Unix domain socket** en `/run/focusblock/focusblock.sock`. Mensajes JSON delimitados por newline.
+Unix socket en `/run/focusblock/focusblock.sock`. Cada mensaje es **una línea JSON** con
+nombres en `snake_case`, delimitada por `\n`.
 
-```
-TUI (cliente)                          Daemon (servidor)
-    │                                      │
-    ├─── {"type":"status"} ──────────────▶│
-    │◀── {"type":"status_response",       │
-    │      "detail":"2 active blocks"} ───┤
-    │                                      │
-    ├─── {"type":"add_block",             │
-    │     "app_name":"firefox",           │
-    │     "schedule":"09:00-17:00"} ─────▶│
-    │◀── {"type":"ok"} ──────────────────┤
-    │                                      │
-    ├─── {"type":"remove_block",          │
-    │     "app_name":"firefox"} ─────────▶│
-    │◀── {"type":"ok"} ──────────────────┤
-    │                                      │
-    ├─── {"type":"force_stop",            │
-    │     "app_name":"firefox",           │
-    │     "password":"..."} ─────────────▶│
-    │◀── {"type":"ok"} ──────────────────┤
-    │   (o {"type":"error","detail":"..."})│
+```text
+{"type":"status"}                                      → {"type":"status_response","detail":"..."}
+{"type":"add_block","app_name":"firefox","schedule":"09:00-17:00"}
+{"type":"remove_block","app_name":"firefox"}
+{"type":"force_stop","app_name":"firefox","password":"..."}
+                                                       → {"type":"ok"} | {"type":"error","detail":"..."}
 ```
 
-> Los campos enriquecidos de estado (`active_blocks`, `daemon_uptime`) llegan con el BlockEngine (Fase 4); hoy `status_response` solo transporta `detail`.
+`add_block` y `remove_block` todavía no tienen handler real: el daemon responde `error`.
+Los campos ricos de estado (`active_blocks`, `daemon_uptime`) están pendientes para la
+fase 6.
 
-### Tipos de Mensaje
+### Contrato
 
 ```cs
 public enum MessageType
 {
-    Status,
-    StatusResponse,
-    AddBlock,
-    RemoveBlock,
-    ForceStop,
-    Ok,
-    Error,
+    Status, StatusResponse, AddBlock, RemoveBlock, ForceStop, Ok, Error,
 }
 
 public record IpcMessage(
@@ -160,12 +120,13 @@ public record IpcMessage(
     string? Password = null);
 ```
 
----
+`IpcJson.Options` es una única instancia compartida en `Contracts`: `snake_case` y enums
+como string. La contraseña nunca se hace eco ni se loguea.
 
 ## Esquema SQLite
 
 ```sql
--- Base de datos: /var/lib/focusblock/metrics.db
+-- /var/lib/focusblock/metrics.db
 
 CREATE TABLE IF NOT EXISTS block_events (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -189,11 +150,9 @@ CREATE TABLE IF NOT EXISTS bypass_attempts (
     app_name     TEXT NOT NULL,
     attempted_at TEXT NOT NULL,
     method       TEXT NOT NULL,  -- 'early_stop', 'config_edit', 'service_stop'
-    blocked      INTEGER NOT NULL DEFAULT 1  -- 1=prevenido, 0=exitoso
+    blocked      INTEGER NOT NULL DEFAULT 1
 );
 ```
-
----
 
 ## Servicio systemd
 
@@ -221,24 +180,7 @@ SyslogIdentifier=focusblock
 WantedBy=multi-user.target
 ```
 
----
+## Decisiones
 
-## Decisiones de Arquitectura
-
-Resumen de decisiones — el detalle (contexto, alternativas, consecuencias) vive en los ADRs (`docs/adr/`).
-
-| Decisión | ADR |
-|----------|-----|
-| Framework TUI: Terminal.Gui v2 | `docs/adr/ADR-001-terminal-gui.md` |
-| IPC: Unix domain socket | `docs/adr/ADR-002-ipc-unix-socket.md` |
-| BD: SQLite + Dapper | `docs/adr/ADR-003-sqlite-dapper.md` |
-| Hashing: Argon2id | `docs/adr/ADR-004-argon2id.md` |
-| Formato config: JSON | `docs/adr/ADR-005-config-json.md` |
-| Escaneo: `/proc` directo | `docs/adr/ADR-006-proc-scan.md` |
-| Servicio: systemd | `docs/adr/ADR-007-systemd.md` |
-| Testing: xUnit + Moq + FluentAssertions | `docs/adr/ADR-008-testing-stack.md` |
-| Testing: puntos de inyección (seams) | `docs/adr/ADR-009-testing-seams.md` |
-| Target: .NET 10 | `docs/adr/ADR-010-dotnet-10-target.md` |
-| Driver: DOTNET (workaround) | `docs/adr/ADR-011-dotnet-driver.md` |
-| Estrategias de bloqueo: Schedule-only | `docs/adr/ADR-012-blocking-strategies.md` |
-| Core compartido e inversión de dependencias | `docs/adr/ADR-013-core-dependency-inversion.md` |
+El índice de ADRs vive en `docs/adr/README.md`. Cada decisión tiene contexto, alternativas
+y consecuencias en su archivo.

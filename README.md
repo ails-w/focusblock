@@ -71,7 +71,7 @@ dotnet run --project src/FocusBlock.Tui
 
 - Unit: `dotnet test` — services, rule engine, cooldown, auth
 - Integration: real SQLite, `/proc`, IPC socket, `chattr +i`
-- Functional: daemon lifecycle on the host (see `docs/development-plan.md`)
+- Functional: daemon lifecycle on the host (see `docs/project.md`, Testing)
 
 ## What I Learned / Key Decisions
 

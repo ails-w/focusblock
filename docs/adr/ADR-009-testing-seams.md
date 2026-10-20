@@ -42,5 +42,5 @@ contenedores.
 
 ## Referencias
 
-- `docs/development-plan.md` (Puntos de inyección)
+- `docs/project.md` (Puntos de inyección)
 - `docs/adr/ADR-007-systemd.md`

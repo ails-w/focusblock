@@ -7,12 +7,11 @@ Mapa de navegación de la documentación del proyecto. Este es el **índice úni
 | Área | Documento | Contenido |
 |------|-----------|-----------|
 | **Estado actual** (mutable) | `docs/handoff.md` | Fase activa, próximo paso, riesgos |
-| Visión | `docs/vision.md` | Alcance global, fuera-de-scope, competencias |
+| **Proyecto** | `docs/project.md` | Alcance, competencias, método, testing y deployment |
 | Plan de fases | `docs/phase-plan.md` | Fases con scope, conceptos, criterio de salida |
 | **Aprendizaje** | `docs/learning/` | Conceptos por fase (`phase-NN-name.md`) + glosario |
 | **Decisiones** | `docs/adr/` | ADRs (`ADR-0NN-*.md`) |
 | Arquitectura | `docs/architecture.md` | Arquitectura, IPC, SQLite, systemd |
-| Desarrollo | `docs/development-plan.md` | Testing, puntos de inyección, deployment |
 
 ## Fuera de docs
 
