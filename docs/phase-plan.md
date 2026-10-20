@@ -1,8 +1,7 @@
 # Plan de Fases — FocusBlock
 
 > Índice maestro del desarrollo. La fase activa tiene detalle expandido.
-> Conceptos → `docs/learning/phase-NN-name.md` · Log → `docs/progress-log/phase-NN-name.md`
-> Estado mutable → `docs/handoff.md`
+> Conceptos → `docs/learning/phase-NN-name.md` · Estado mutable → `docs/handoff.md`
 
 ## Reglas globales
 
@@ -10,20 +9,20 @@
 - Código en inglés, docs en español.
 - Commits convencionales (feat:, fix:, test:, docs:, refactor:).
 - Cada feature termina en **commit** en `dev`. Las PRs (`dev → main`) se abren al cerrar la fase: una de código y otra de docs.
-- Al cerrar una fase: actualizar `progress-log/`, `learning/`, `phase-plan.md` (estado y features) y `handoff.md` + commit.
+- Al cerrar una fase: actualizar `learning/`, `glossary.md`, `phase-plan.md` (estado y features) y `handoff.md` + commit.
 
 ## Resumen de fases
 
-| # | Nombre | Estado | Conceptos | Log |
-|---|--------|--------|-----------|-----|
-| 0 | Setup | ✅ | `learning/phase-00-setup.md` | `progress-log/phase-00-setup.md` |
-| 1 | Esqueleto TUI | ✅ | `learning/phase-01-tui.md` | `progress-log/phase-01-tui.md` |
-| 2 | Configuración | ✅ | `learning/phase-02-config.md` | `progress-log/phase-02-config.md` |
-| 3 | Daemon y monitor | ✅ | `learning/phase-03-daemon.md` | `progress-log/phase-03-daemon.md` |
-| 4 | Núcleo bloqueador | ✅ | `learning/phase-04-blocker.md` | `progress-log/phase-04-blocker.md` |
-| 5 | Anti-bypass | ⏳ | `learning/phase-05-antibypass.md` | `progress-log/phase-05-antibypass.md` |
-| 6 | Métricas | ⏳ | `learning/phase-06-metrics.md` | `progress-log/phase-06-metrics.md` |
-| 7 | Pulido y testing | ⏳ | `learning/phase-07-polish.md` | `progress-log/phase-07-polish.md` |
+| # | Nombre | Estado | Conceptos |
+|---|--------|--------|-----------|
+| 0 | Setup | ✅ | `learning/phase-00-setup.md` |
+| 1 | Esqueleto TUI | ✅ | `learning/phase-01-tui.md` |
+| 2 | Configuración | ✅ | `learning/phase-02-config.md` |
+| 3 | Daemon y monitor | ✅ | `learning/phase-03-daemon.md` |
+| 4 | Núcleo bloqueador | ✅ | `learning/phase-04-blocker.md` |
+| 5 | Anti-bypass | ⏳ | `learning/phase-05-antibypass.md` |
+| 6 | Métricas | ⏳ | `learning/phase-06-metrics.md` |
+| 7 | Pulido y testing | ⏳ | `learning/phase-07-polish.md` |
 
 ---
 
@@ -174,7 +173,7 @@
 
 **Objetivo:** daemon root que monitorea `/proc`, mata procesos y sirve IPC por Unix socket.
 
-**Cerrada:** 2026-09-15. Features 3.1–3.4 implementadas y testeadas (32 tests). El **cableado end-to-end** (`Program.cs`, mapeo nombre→PID, handler IPC real) se difiere a Fase 4 (BlockEngine). Detalle → `docs/progress-log/phase-03-daemon.md`.
+**Cerrada:** 2026-09-15. Features 3.1–3.4 implementadas y testeadas (32 tests). El **cableado end-to-end** (`Program.cs`, mapeo nombre→PID, handler IPC real) se difiere a Fase 4 (BlockEngine). Detalle en `learning/phase-03-daemon.md`.
 
 ### Scope
 
@@ -241,7 +240,7 @@
 
 **Objetivo:** motor de reglas, cooldown thread-safe y sistema de challenges.
 
-**Completada:** features 4.1–4.4 implementadas y testeadas (91 tests). Cierre documental completo (`learning/phase-04-blocker.md` + `progress-log/phase-04-blocker.md` + diagramas); PRs `dev → main` pendientes.
+**Completada:** features 4.1–4.4 implementadas y testeadas (91 tests). Cierre documental en `learning/phase-04-blocker.md`.
 
 ### Scope
 

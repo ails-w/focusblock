@@ -260,6 +260,8 @@ en un proyecto neutral. Y registrar la clase concreta en vez del puerto pierde e
 - **`DateTimeOffset.TimeOfDay` es `TimeSpan`**: se resuelve con `TimeOnly.FromDateTime(...)`.
 - **`SocketException` no deriva de `IOException`**: el `catch` original no cubría el daemon caído.
 - **`Dialog.Result` es el índice del botón**: OK = 0, Escape = `null`.
+- **Registros DI faltantes**: sin `ProcessMonitor` ni `BlockEnforcer` registrados, el host no
+  podía resolver `BlockCoordinator`.
 - **`comm` truncado a 15 caracteres**: un nombre más largo nunca coincide.
 - **Race de reuso de PID**: el PID puede apuntar a otro proceso entre señales.
 

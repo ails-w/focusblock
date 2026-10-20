@@ -87,11 +87,8 @@ FocusBlock/
     ├── architecture.md                # Este archivo
     ├── development-plan.md            # Estrategia de testing + deployment
     ├── handoff.md                     # Estado mutable (fase activa, próximo paso)
-    ├── learning/                      # Conceptos aprendidos por fase
-    ├── progress-log/                  # Log histórico por fase
-    ├── adr/                           # ADRs (decisiones de arquitectura)
-    ├── extras/                        # Temas opcionales fuera de las fases
-    └── diagrams/                      # Diagramas
+    ├── learning/                      # Conceptos por fase, glosario y método de estudio
+    └── adr/                           # ADRs (decisiones de arquitectura)
 ```
 
 ---
@@ -244,3 +241,4 @@ Resumen de decisiones — el detalle (contexto, alternativas, consecuencias) viv
 | Target: .NET 10 | `docs/adr/ADR-010-dotnet-10-target.md` |
 | Driver: DOTNET (workaround) | `docs/adr/ADR-011-dotnet-driver.md` |
 | Estrategias de bloqueo: Schedule-only | `docs/adr/ADR-012-blocking-strategies.md` |
+| Core compartido e inversión de dependencias | `docs/adr/ADR-013-core-dependency-inversion.md` |

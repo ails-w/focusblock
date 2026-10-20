@@ -19,7 +19,7 @@ El daemon root debe arrancar con el sistema, reiniciarse ante fallos y correr co
 ## Consecuencias
 
 - Nativo de Arch, auto-reinicio, logs a journald.
-- El daemon no corre en contenedor: necesita el PID namespace del host y root (ver `ADR-009`). Docker queda como extra de aprendizaje opcional.
+- El daemon no corre en contenedor: necesita el PID namespace del host y root (ver `ADR-009`).
 
 ## Referencias
 

@@ -24,4 +24,4 @@ Implementar **solo Schedule** por ahora. Cuando se agreguen las otras estrategia
 
 ## Referencias
 
-- `src/FocusBlock.Contracts/BlockRuleConfig.cs` · `docs/progress-log/phase-02-config.md` (decisión 1)
+- `src/FocusBlock.Contracts/BlockRuleConfig.cs` · `docs/learning/phase-02-config.md` (modelos y defaults)

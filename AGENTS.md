@@ -79,7 +79,7 @@ Este es un proyecto de **APRENDIZAJE**. El objetivo principal es que el estudian
 - Commits: conventional commits en inglés.
 - **Un commit por Feature**: test RED → GREEN → refactor → commit convencional en `dev`.
 - **PR por fase**: al cerrar la fase se abren **dos PRs** `dev → main` — una con el código de todos los features y otra con los docs actualizados. CI (`Lint`/`Build`/`Test`) obligatorio.
-- DoD de una feature: test RED que pasa (GREEN) + refactor + commit convencional en `dev`. El aprendizaje se documenta al cerrar la fase en `docs/learning/phase-NN-name.md`, junto con `progress-log/`, `phase-plan.md` y `handoff.md`.
+- DoD de una feature: test RED que pasa (GREEN) + refactor + commit convencional en `dev`. El aprendizaje se documenta al cerrar la fase en `docs/learning/phase-NN-name.md`, junto con el glosario, `phase-plan.md` y `handoff.md`.
 - Nunca añadir "Co-Authored-By" ni atribución IA.
 
 ## Tabla de punteros

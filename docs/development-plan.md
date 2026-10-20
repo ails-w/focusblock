@@ -76,7 +76,7 @@ dev  ──PR──▶  main
    **No se abre PR por feature.**
 2. Al **cerrar la fase** se abren **dos PRs** `dev → main`, en este orden:
    - **PR de código**: todos los features de la fase.
-   - **PR de docs**: `learning/`, `progress-log/`, `phase-plan.md` y `handoff.md` actualizados.
+   - **PR de docs**: `learning/`, `glossary.md`, `phase-plan.md` y `handoff.md` actualizados.
 3. CI corre `Lint` (`dotnet format --verify-no-changes`), `Build` y `Test`. **Los tres son obligatorios**.
 4. Merge con `--merge` o `--squash`; **nunca `--rebase`** si la historia divergió.
 5. Tras cada merge, sincronizar `dev` con `main`: `git merge --ff-only origin/main`.
@@ -151,8 +151,6 @@ Las dependencias del sistema operativo (filesystem, `/proc`, señales, `chattr`,
 | `IpcClient` | socket | ruta + socket | servidor fake | daemon real |
 
 > Los tests de integración están **etiquetados por categoría** (`Category=Integration`) y se **saltan** cuando faltan privilegios (por ejemplo, `chattr +i` sin root).
-
-> **Extra opcional:** Docker multi-stage vive en `docs/extras/docker-multistage.md` como material de aprendizaje. No es el runtime del daemon ni una estrategia de testing.
 
 ---
 
